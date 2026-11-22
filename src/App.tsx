@@ -52,6 +52,12 @@ const tracks: { n: string; title: string; text: string; slugs: string[] }[] = [
     text: "C в дълбочина, модерен C++, Rust и асемблер за x86-64 и ARM64 – кодът най-близо до машината.",
     slugs: ["c-sistemno", "cpp-moderen", "rust-ot-nulata", "asembler-x86-arm"],
   },
+  {
+    n: "F",
+    title: "Уеб и игри",
+    text: "HTML, CSS, JavaScript, Node.js и игри на Canvas – с кратки видеа със субтитри към част от уроците.",
+    slugs: ["html-css-uebsait", "javascript-za-ueb", "node-api-bazi", "igri-js-canvas"],
+  },
 ];
 
 const faqs = [
@@ -623,7 +629,7 @@ function Landing({ theme }: { theme: Theme }) {
 }
 
 const STATUS = ["Всички", "Незапочнати", "В процес", "Завършени"] as const;
-const CATS = ["Всички", "Основи", "Програмиране", "Софтуер", "Сцена", "Творчество", "Архив", "ИИ и анализ"] as const;
+const CATS = ["Всички", "Основи", "Програмиране", "Софтуер", "Сцена", "Творчество", "Архив", "ИИ и анализ", "Уеб и игри"] as const;
 
 function Catalog() {
   const [cat, setCat] = useState<(typeof CATS)[number]>("Всички");

@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="bg"><head><meta charset="utf-8"><title>video</title>
+<style>
+@font-face{font-family:Inter;font-weight:400;src:url("FONTS/inter-cyrillic-400-normal.woff2");unicode-range:U+0400-04FF}
+@font-face{font-family:Inter;font-weight:400;src:url("FONTS/inter-latin-400-normal.woff2");unicode-range:U+0000-00FF}
+@font-face{font-family:Inter;font-weight:600;src:url("FONTS/inter-cyrillic-600-normal.woff2");unicode-range:U+0400-04FF}
+@font-face{font-family:Inter;font-weight:600;src:url("FONTS/inter-latin-600-normal.woff2");unicode-range:U+0000-00FF}
+@font-face{font-family:JB;src:url("FONTS/jetbrains-mono-cyrillic-400-normal.woff2");unicode-range:U+0400-04FF}
+@font-face{font-family:JB;src:url("FONTS/jetbrains-mono-latin-400-normal.woff2");unicode-range:U+0000-00FF}
+@font-face{font-family:Lit;font-weight:700;src:url("FONTS/literata-cyrillic-700-normal.woff2");unicode-range:U+0400-04FF}
+@font-face{font-family:Lit;font-weight:700;src:url("FONTS/literata-latin-700-normal.woff2");unicode-range:U+0000-00FF}
+:root{--bg:#0c0f16;--surface:#121621;--raised:#191e2b;--fg:#eceae4;--mute:#a2a3a8;--faint:#8a8c94;--amber:#ffa640;--teal:#5fd6c8;--violet:#b9a2ff;--rose:#ff7a8f;--line:#ffffff1c}
+*{box-sizing:border-box;margin:0}
+html,body{width:1280px;height:720px;overflow:hidden;background:var(--bg);color:var(--fg);font-family:Inter,"DejaVu Sans",sans-serif}
+#stage{position:relative;width:1280px;height:720px}
+.top{position:absolute;left:0;right:0;top:0;height:54px;display:flex;align-items:center;gap:14px;padding:0 26px;border-bottom:1px solid var(--line);background:var(--surface)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--amber);box-shadow:0 0 12px var(--amber)}
+.top b{font-family:Lit,serif;font-size:20px;font-weight:700}
+.top span{color:var(--mute);font-size:15px;margin-left:auto}
+.main{position:absolute;left:22px;right:22px;top:72px;bottom:112px;display:flex;gap:18px}
+.pane{flex:1;min-width:0;border:1px solid var(--line);border-radius:14px;background:var(--surface);display:flex;flex-direction:column;overflow:hidden}
+.pane h4{font:400 13px JB,"DejaVu Sans Mono",monospace;color:var(--mute);padding:10px 16px;border-bottom:1px solid var(--line);text-transform:uppercase;letter-spacing:.08em;background:var(--raised);display:flex;justify-content:space-between}
+#code,#term{flex:1;overflow:hidden;padding:14px 0;font:400 17px/1.55 JB,"DejaVu Sans Mono",monospace;white-space:pre;position:relative}
+#code .ln{display:inline-block;width:46px;text-align:right;padding-right:16px;color:#5d6270;user-select:none}
+#code .row{display:block;padding-right:16px}
+.cur{display:inline-block;width:9px;height:1.1em;background:var(--amber);vertical-align:text-bottom;animation:b 1s steps(2) infinite}
+@keyframes b{50%{opacity:0}}
+.k{color:#c4a8ff}.s{color:#9ae6a0}.c{color:#6c7386}.n{color:#ffb86b}.t{color:#7fd6ff}.a{color:#ffd37a}
+#prev{flex:1;background:#fff;border:0;width:100%}
+#cons{height:120px;border-top:1px solid var(--line);background:#0a0c12;padding:8px 16px;font:400 15px/1.5 JB,"DejaVu Sans Mono",monospace;overflow:hidden;white-space:pre-wrap}
+#cons .e{color:var(--rose)}#cons .w{color:var(--amber)}
+#cons:empty::before{content:"конзола";color:#5d6270}
+.hidden{display:none}
+#term{padding:16px 22px;white-space:pre-wrap;word-break:break-word}
+#term .p{color:var(--teal)}#term .o{color:#d7d6d0}#term .m{color:var(--mute)}
+#cap{position:absolute;left:0;right:0;bottom:0;height:90px;display:flex;align-items:center;justify-content:center;padding:0 80px;text-align:center;background:linear-gradient(0deg,#05060a 40%,transparent);font:600 25px/1.35 Inter,"DejaVu Sans",sans-serif}
+#cap span{background:#05060acc;padding:6px 18px;border-radius:10px}
+#title{position:absolute;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:0 120px;transition:opacity .5s}
+#title .eb{font:400 15px JB,monospace;color:var(--amber);letter-spacing:.14em;text-transform:uppercase}
+#title h1{font:700 52px/1.15 Lit,serif}
+#title p{color:var(--mute);font-size:20px}
+</style></head><body>
+<div id="stage">
+ <div class="top"><span class="dot" style="margin:0"></span><b>Светлина и код</b><span id="crumb"></span></div>
+ <div class="main" id="main"></div>
+ <div id="cap"><span id="capt"></span></div>
+ <div id="title"><div class="eb">Видео урок</div><h1 id="t1"></h1><p id="t2"></p></div>
+</div>
+<script>
+const SPEC = __SPEC__;
+const $ = (s) => document.querySelector(s);
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const cues = []; let T0 = 0;
+const now = () => (performance.now() - T0) / 1000;
+const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const KW = new Set("const let var function return if else for while of in new class extends import export from async await true false null undefined this typeof switch case break continue default try catch throw def print None True False self lambda int float char void struct enum fn mut pub use impl match include static unsigned #include".split(" "));
+function hl(src) {
+  return esc(src).replace(/(&lt;!--[\s\S]*?--&gt;|\/\*[\s\S]*?\*\/|\/\/[^\n]*|#[^\n]*$)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'|`(?:[^`\\]|\\.)*`)|(&lt;\/?[a-zA-Z][\w-]*|&gt;)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_][\w-]*)/gm,
+    (m, c, s, t, n, w) => c ? `<i class=c>${m}</i>` : s ? `<i class=s>${m}</i>` : t ? `<i class=t>${m}</i>` : n ? `<i class=n>${m}</i>` : KW.has(w) ? `<i class=k>${m}</i>` : m);
+}
+function setCap(t) { $("#capt").textContent = t || ""; $("#cap").style.opacity = t ? 1 : 0; }
+let capStart = 0, capText = "";
+function say(t) { endCap(); capText = t; capStart = now(); setCap(t); }
+function endCap() { if (capText) cues.push([+capStart.toFixed(2), +now().toFixed(2), capText]); capText = ""; }
+
+function renderCode(text, cursor) {
+  const lines = text.split("\n");
+  $("#code").innerHTML = lines.map((l, i) => `<span class=row><span class=ln>${i + 1}</span>${hl(l)}${cursor && i === lines.length - 1 ? "<span class=cur></span>" : ""}</span>`).join("");
+  const el = $("#code"); el.scrollTop = el.scrollHeight;
+}
+async function typeTo(cur, target) {
+  let p = 0; while (p < cur.length && p < target.length && cur[p] === target[p]) p++;
+  // изтриване назад
+  const delN = cur.length - p;
+  const dStep = Math.max(1, Math.ceil(delN / 25));
+  for (let i = cur.length; i > p; i -= dStep) { renderCode(cur.slice(0, Math.max(p, i - dStep)), true); await sleep(18); }
+  cur = cur.slice(0, p);
+  const rest = target.length - p;
+  const per = Math.min(0.045, 7 / Math.max(rest, 1));        // най-много ~7 секунди на стъпка
+  let chunk = Math.max(1, Math.ceil(0.02 / per));
+  for (let i = p; i < target.length; i += chunk) {
+    renderCode(target.slice(0, Math.min(target.length, i + chunk)), true);
+    await sleep(Math.max(8, per * 1000 * chunk));
+  }
+  renderCode(target, true);
+  return target;
+}
+const consLines = [];
+addEventListener("message", (e) => { const d = e.data; if (!d || !d.c) return; consLines.push(`<span class="${d.c === "error" ? "e" : d.c === "warn" ? "w" : ""}">${esc(d.t)}</span>`); $("#cons").innerHTML = consLines.slice(-5).join("\n"); });
+const HOOK = "<script>for(const k of['log','warn','error']){const o=console[k];console[k]=(...a)=>{parent.postMessage({c:k,t:a.map(x=>typeof x==='object'?JSON.stringify(x):String(x)).join(' ')},'*');o.apply(console,a)}};addEventListener('error',e=>parent.postMessage({c:'error',t:e.message},'*'));<\/script>";
+function showPreview(code) {
+  consLines.length = 0; $("#cons").innerHTML = "";
+  const f = $("#prev"); f.srcdoc = HOOK + code;
+}
+
+async function runCode() {
+  $("#main").innerHTML = `<div class=pane style="flex:1.1"><h4><span>${esc(SPEC.file || "index.html")}</span><span>${esc(SPEC.lang || "")}</span></h4><div id=code></div></div>
+   <div class=pane><h4><span>${esc(SPEC.previewTitle || "Резултат")}</span><span>на живо</span></h4><iframe id=prev tabindex=0 sandbox="allow-scripts allow-same-origin"></iframe><div id=cons class="${SPEC.console === false ? "hidden" : ""}"></div></div>`;
+  let cur = "";
+  for (const st of SPEC.steps) {
+    if (st.caption) say(st.caption);
+    if (st.code !== undefined) cur = await typeTo(cur, st.code);
+    if (st.run !== false && st.code !== undefined) showPreview(cur);
+    if (st.keys) {
+      await sleep(600);
+      const f = $("#prev"); f.contentWindow.focus();
+      for (const k of st.keys) { // {key, down(ms)} – изпращат се през window.__key
+        await window.__key(k.key, k.hold || 120);
+        await sleep(k.after || 50);
+      }
+    }
+    await sleep((st.hold ?? 2.2) * 1000);
+  }
+  endCap();
+}
+async function runTerm() {
+  $("#main").innerHTML = `<div class=pane><h4><span>${esc(SPEC.shell || "терминал")}</span><span>${esc(SPEC.cwd || "~/проект")}</span></h4><div id=term></div></div>`;
+  const term = $("#term"); let html = "";
+  for (const st of SPEC.steps) {
+    if (st.caption) say(st.caption);
+    if (st.cmd !== undefined) {
+      const pre = html + `<span class=p>$ </span>`;
+      for (let i = 0; i <= st.cmd.length; i += 1) { term.innerHTML = pre + esc(st.cmd.slice(0, i)) + `<span class=cur></span>`; await sleep(st.cmd.length > 60 ? 14 : 30); }
+      html = pre + esc(st.cmd) + "\n"; term.innerHTML = html;
+      await sleep(350);
+    }
+    if (st.out) {
+      const lines = st.out.replace(/\n$/, "").split("\n");
+      for (const l of lines) { html += `<span class=o>${esc(l)}</span>\n`; term.innerHTML = html; term.scrollTop = term.scrollHeight; await sleep(lines.length > 25 ? 25 : 70); }
+    }
+    term.scrollTop = term.scrollHeight;
+    await sleep((st.hold ?? 2.2) * 1000);
+  }
+  term.innerHTML = html + `<span class=p>$ </span><span class=cur></span>`;
+  endCap();
+}
+(async () => {
+  document.fonts && await document.fonts.ready;
+  $("#crumb").textContent = SPEC.crumb || "";
+  $("#t1").textContent = SPEC.title; $("#t2").textContent = SPEC.subtitle || "";
+  setCap("");
+  T0 = performance.now(); window.__t0 = Date.now();
+  await sleep(2200); $("#title").style.opacity = 0; await sleep(500); $("#title").style.display = "none";
+  if (SPEC.template === "terminal") await runTerm(); else await runCode();
+  await sleep(1200);
+  $("#title").style.display = "flex"; $("#title").style.opacity = 1; $("#t1").textContent = "Опитай го сам"; $("#t2").textContent = SPEC.outro || "Задачата е в края на урока.";
+  await sleep(1800);
+  window.__cues = cues; window.__done = true;
+})();
+</script></body></html>

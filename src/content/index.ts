@@ -22,6 +22,10 @@ import { c20 } from "./c20";
 import { c21 } from "./c21";
 import { c22 } from "./c22";
 import { c23 } from "./c23";
+import { c24 } from "./c24";
+import { c25 } from "./c25";
+import { c26 } from "./c26";
+import { c27 } from "./c27";
 
 export const content: Record<string, Content[][]> = {
   "nachinaesht-vj": c1,
@@ -47,5 +51,9 @@ export const content: Record<string, Content[][]> = {
   "cpp-moderen": c21,
   "rust-ot-nulata": c22,
   "asembler-x86-arm": c23,
+  "html-css-uebsait": c24,
+  "javascript-za-ueb": c25,
+  "node-api-bazi": c26,
+  "igri-js-canvas": c27,
 };
 export type { Content } from "./types";
