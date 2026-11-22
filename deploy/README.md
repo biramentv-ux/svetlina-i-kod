@@ -31,14 +31,18 @@
 Само вградените видеа изискват интернет.
 
 
-## Собствен домейн: shkola.dyrakarmy.eu (Hugging Face Space)
-Школата е в Space-а `DyrakArmy/svetlina-i-kod`. Собствените домейни за Spaces изискват план PRO и публичен Space.
-1. Качи `index.html` в Space-а: Files → Add file → Upload files → Commit.
-2. В Space-а: Settings → Custom Domain → въведи `shkola.dyrakarmy.eu`.
-3. При регистратора на домейна добави DNS запис: тип `CNAME`, име `shkola`, стойност `hf.space`.
-4. Изчакай състоянието да стане „ready“ (от „pending“). Разпространението на DNS може да отнеме до няколко часа.
+## Собствен домейн: shkola.dyrakarmy.eu (настроен)
+Школата се обслужва от GitHub Pages на **https://shkola.dyrakarmy.eu/**. DNS на dyrakarmy.eu е в Cloudflare.
 
-Адресът е записан в `index.html` (canonical и og:url). Ако избереш друг поддомейн, смени го там и сглоби отново.
+| Запис в Cloudflare | Тип | Стойност | Защо |
+|---|---|---|---|
+| `shkola` | CNAME | `biramentv-ux.github.io` (DNS only, сив облак) | насочва поддомейна към GitHub Pages; без прокси, за да издаде GitHub HTTPS сертификат |
+| `_github-pages-challenge-biramentv-ux` | TXT | код от GitHub | доказва, че домейнът е твой (Verified domain) – никой друг не може да го вземе в GitHub Pages |
+| `_dnslink.shkola` | TXT | `dnslink=/ipfs/<CID>` | постоянен адрес на школата в IPFS |
+
+В хранилището: Settings → Pages → Custom domain = `shkola.dyrakarmy.eu`, Enforce HTTPS – включено.
+Не включвай оранжевия облак (Proxied) за `shkola`, иначе подновяването на сертификата в GitHub спира.
+Hugging Face Space остава като резервно копие на адрес `huggingface.co/spaces/DyrakArmy/svetlina-i-kod`.
 
 ## Преди публикуване
 - Прегледайте уроците за конкретни програми спрямо текущите им версии.
