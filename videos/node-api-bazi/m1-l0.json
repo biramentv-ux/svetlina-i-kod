@@ -1,0 +1,8 @@
+{"template":"terminal","title":"HTTP сървър само с node:http","subtitle":"Маршрути, JSON и проверка с curl","crumb":"Node.js: сървър, API и бази данни · урок 3","shell":"bash","cwd":"~/server","outro":"Добави маршрути /api/chas и /api/sbor и ги провери с curl.",
+"steps":[
+{"caption":"Първи терминал: стартираме сървъра.","cmd":"node server.js","out":"Слушам на http://127.0.0.1:3000","hold":2},
+{"caption":"Втори терминал: питаме маршрута /api/vreme.","cmd":"curl -s http://127.0.0.1:3000/api/vreme","out":"{\"grad\":\"София\",\"gradusi\":18,\"jasno\":true}","hold":2.2},
+{"caption":"Кирилица в параметър: curl я кодира със -G.","cmd":"curl -s -G http://127.0.0.1:3000/api/vreme --data-urlencode \"grad=Пловдив\"","out":"{\"grad\":\"Пловдив\",\"gradusi\":18,\"jasno\":true}","hold":2.2},
+{"caption":"Непознат адрес връща статус 404.","cmd":"curl -si http://127.0.0.1:3000/nema | head -1","out":"HTTP/1.1 404 Not Found","hold":2},
+{"caption":"POST с JSON тяло: сървърът го чете и връща.","cmd":"curl -s -X POST -d '{\"tekst\":\"здравей\"}' http://127.0.0.1:3000/api/echo","out":"{\"poluchih\":{\"tekst\":\"здравей\"}}","hold":2.5}
+]}

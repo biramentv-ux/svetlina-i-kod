@@ -1,0 +1,38 @@
+{
+ "template": "code",
+ "title": "Рисуване на Canvas",
+ "subtitle": "Контекст, координати и фигури",
+ "crumb": "Игри с JavaScript и Canvas · урок 1",
+ "file": "index.html",
+ "lang": "HTML",
+ "previewTitle": "Браузър",
+ "console": false,
+ "outro": "Нарисувай собствена сцена от фигури.",
+ "steps": [
+  {
+   "caption": "Canvas е празно платно с размер в пиксели.",
+   "code": "<style>body{margin:0}</style>\n<canvas width=\"400\" height=\"240\"\n        style=\"background:#1e1b4b\"></canvas>\n",
+   "hold": 2
+  },
+  {
+   "caption": "Контекстът 2d е четката: цвят, после правоъгълник.",
+   "code": "<style>body{margin:0}</style>\n<canvas width=\"400\" height=\"240\"\n        style=\"background:#1e1b4b\"></canvas>\n<script>\nconst canvas = document.querySelector(\"canvas\");\nconst ctx = canvas.getContext(\"2d\");\nctx.fillStyle = \"tomato\";\nctx.fillRect(20, 20, 120, 70);\n</script>\n",
+   "hold": 2.2
+  },
+  {
+   "caption": "Началото (0, 0) е горе вляво, а y расте надолу.",
+   "code": "<style>body{margin:0}</style>\n<canvas width=\"400\" height=\"240\"\n        style=\"background:#1e1b4b\"></canvas>\n<script>\nconst canvas = document.querySelector(\"canvas\");\nconst ctx = canvas.getContext(\"2d\");\nctx.fillStyle = \"tomato\";\nctx.fillRect(20, 20, 120, 70);\nctx.fillStyle = \"#38bdf8\";\nctx.fillRect(150, 100, 120, 70);\n</script>\n",
+   "hold": 2.2
+  },
+  {
+   "caption": "Кръгът се рисува с път: beginPath, arc, fill.",
+   "code": "<style>body{margin:0}</style>\n<canvas width=\"400\" height=\"240\"\n        style=\"background:#1e1b4b\"></canvas>\n<script>\nconst canvas = document.querySelector(\"canvas\");\nconst ctx = canvas.getContext(\"2d\");\nctx.fillStyle = \"tomato\";\nctx.fillRect(20, 20, 120, 70);\nctx.fillStyle = \"#38bdf8\";\nctx.fillRect(150, 100, 120, 70);\nctx.beginPath();\nctx.arc(330, 60, 30, 0, Math.PI * 2);\nctx.fillStyle = \"#fde047\";\nctx.fill();\n</script>\n",
+   "hold": 2.2
+  },
+  {
+   "caption": "fillText пише текст със зададен шрифт и цвят.",
+   "code": "<style>body{margin:0}</style>\n<canvas width=\"400\" height=\"240\"\n        style=\"background:#1e1b4b\"></canvas>\n<script>\nconst canvas = document.querySelector(\"canvas\");\nconst ctx = canvas.getContext(\"2d\");\nctx.fillStyle = \"tomato\";\nctx.fillRect(20, 20, 120, 70);\nctx.fillStyle = \"#38bdf8\";\nctx.fillRect(150, 100, 120, 70);\nctx.beginPath();\nctx.arc(330, 60, 30, 0, Math.PI * 2);\nctx.fillStyle = \"#fde047\";\nctx.fill();\nctx.font = \"20px sans-serif\";\nctx.fillStyle = \"white\";\nctx.fillText(\"Здравей, платно!\", 20, 215);\n</script>\n",
+   "hold": 2.5
+  }
+ ]
+}

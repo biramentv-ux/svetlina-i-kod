@@ -1,0 +1,33 @@
+{
+ "template": "code",
+ "title": "Променливи, типове и условия",
+ "subtitle": "Първите стъпки с конзолата",
+ "crumb": "JavaScript за уеб · урок 1",
+ "file": "index.html",
+ "lang": "HTML + JS",
+ "previewTitle": "Конзола",
+ "console": true,
+ "outro": "Сега напиши функция за високосна година.",
+ "steps": [
+  {
+   "caption": "const за стойност, която не се променя, let за такава, която се променя",
+   "code": "<!doctype html>\n<meta charset=\"utf-8\">\n<script>\nconst school = \"Светлина и код\";\nlet n = 12;\nn = n + 1;\nconsole.log(school, n);\n</script>",
+   "hold": 1.8
+  },
+  {
+   "caption": "typeof показва типа, а 0.1 + 0.2 не е точно 0.3",
+   "code": "<!doctype html>\n<meta charset=\"utf-8\">\n<script>\nconst school = \"Светлина и код\";\nlet n = 12;\nn = n + 1;\nconsole.log(school, n);\nconsole.log(typeof 42, typeof \"текст\");\nconsole.log(0.1 + 0.2);\n</script>",
+   "hold": 1.8
+  },
+  {
+   "caption": "=== сравнява и типа, затова е по-безопасно от ==",
+   "code": "<!doctype html>\n<meta charset=\"utf-8\">\n<script>\nconst school = \"Светлина и код\";\nlet n = 12;\nn = n + 1;\nconsole.log(school, n);\nconsole.log(typeof 42, typeof \"текст\");\nconsole.log(0.1 + 0.2);\nconsole.log(1 == \"1\", 1 === \"1\");\n</script>",
+   "hold": 1.8
+  },
+  {
+   "caption": "Условието if избира коя част от кода да се изпълни",
+   "code": "<!doctype html>\n<meta charset=\"utf-8\">\n<script>\nconst school = \"Светлина и код\";\nlet n = 12;\nn = n + 1;\nconsole.log(school, n);\nconsole.log(typeof 42, typeof \"текст\");\nconsole.log(0.1 + 0.2);\nconsole.log(1 == \"1\", 1 === \"1\");\nconst mark = 5.5;\nif (mark >= 5.5) console.log(\"отличен\");\nelse console.log(\"опитай пак\");\n</script>",
+   "hold": 2.2
+  }
+ ]
+}

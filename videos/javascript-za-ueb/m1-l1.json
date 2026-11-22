@@ -1,0 +1,77 @@
+{
+ "template": "code",
+ "title": "Събития и форми",
+ "subtitle": "submit, preventDefault и делегиране",
+ "crumb": "JavaScript за уеб · урок 4",
+ "file": "index.html",
+ "lang": "HTML",
+ "previewTitle": "Браузър",
+ "console": false,
+ "outro": "Направи форма, която добавя елементи в списък.",
+ "steps": [
+  {
+   "caption": "Форма с поле и празен списък",
+   "code": "<!doctype html>\n<meta charset=\"utf-8\">\n<form id=\"f\">\n  <input id=\"t\">\n  <button>Добави</button>\n</form>\n<ul id=\"list\"></ul>\n<script>\n\n</script>",
+   "hold": 1.2
+  },
+  {
+   "caption": "submit обработваме с addEventListener, а preventDefault спира презареждането",
+   "code": "<!doctype html>\n<meta charset=\"utf-8\">\n<form id=\"f\">\n  <input id=\"t\">\n  <button>Добави</button>\n</form>\n<ul id=\"list\"></ul>\n<script>\nconst f = document.querySelector(\"#f\");\nconst t = document.querySelector(\"#t\");\nt.focus();\nf.addEventListener(\"submit\", (e) => {\n  e.preventDefault();\n  const li = document.createElement(\"li\");\n  li.textContent = t.value;\n  list.append(li);\n  t.value = \"\";\n});\n</script>",
+   "hold": 0.8,
+   "keys": [
+    {
+     "key": "C",
+     "hold": 50,
+     "after": 50
+    },
+    {
+     "key": "l",
+     "hold": 50,
+     "after": 50
+    },
+    {
+     "key": "i",
+     "hold": 50,
+     "after": 50
+    },
+    {
+     "key": "p",
+     "hold": 50,
+     "after": 50
+    },
+    {
+     "key": "Enter",
+     "hold": 60,
+     "after": 150
+    }
+   ]
+  },
+  {
+   "caption": "Един слушател на списъка с closest обслужва всички елементи – делегиране",
+   "code": "<!doctype html>\n<meta charset=\"utf-8\">\n<form id=\"f\">\n  <input id=\"t\">\n  <button>Добави</button>\n</form>\n<ul id=\"list\"></ul>\n<script>\nconst f = document.querySelector(\"#f\");\nconst t = document.querySelector(\"#t\");\nt.focus();\nf.addEventListener(\"submit\", (e) => {\n  e.preventDefault();\n  const li = document.createElement(\"li\");\n  li.textContent = t.value;\n  list.append(li);\n  t.value = \"\";\n});\nlist.addEventListener(\"click\", (e) => {\n  e.target.closest(\"li\")?.remove();\n});\n</script>",
+   "hold": 2,
+   "keys": [
+    {
+     "key": "M",
+     "hold": 50,
+     "after": 50
+    },
+    {
+     "key": "i",
+     "hold": 50,
+     "after": 50
+    },
+    {
+     "key": "x",
+     "hold": 50,
+     "after": 50
+    },
+    {
+     "key": "Enter",
+     "hold": 60,
+     "after": 150
+    }
+   ]
+  }
+ ]
+}

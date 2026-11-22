@@ -1,0 +1,33 @@
+{
+ "template": "code",
+ "title": "DOM: промяна на страницата",
+ "subtitle": "Намираш елемент и го променяш",
+ "crumb": "JavaScript за уеб · урок 3",
+ "file": "index.html",
+ "lang": "HTML",
+ "previewTitle": "Браузър",
+ "console": false,
+ "outro": "Генерирай списък от масив с данни.",
+ "steps": [
+  {
+   "caption": "Страницата е дърво от елементи – започваме със заглавие и празен списък",
+   "code": "<!doctype html>\n<meta charset=\"utf-8\">\n<style>.hot{color:red}</style>\n<h1 id=\"title\">Програма</h1>\n<ul id=\"list\"></ul>\n<script>\n\n</script>",
+   "hold": 1.5
+  },
+  {
+   "caption": "querySelector намира елемента, textContent сменя текста му",
+   "code": "<!doctype html>\n<meta charset=\"utf-8\">\n<style>.hot{color:red}</style>\n<h1 id=\"title\">Програма</h1>\n<ul id=\"list\"></ul>\n<script>\nconst title = document.querySelector(\"#title\");\ntitle.textContent = \"Вечерта на живо\";\n</script>",
+   "hold": 2
+  },
+  {
+   "caption": "createElement и append създават по един елемент за всеки запис от масива",
+   "code": "<!doctype html>\n<meta charset=\"utf-8\">\n<style>.hot{color:red}</style>\n<h1 id=\"title\">Програма</h1>\n<ul id=\"list\"></ul>\n<script>\nconst title = document.querySelector(\"#title\");\ntitle.textContent = \"Вечерта на живо\";\nconst list = document.querySelector(\"#list\");\nfor (const a of [\"Откриване\", \"Финал\"]) {\n  const li = document.createElement(\"li\");\n  li.textContent = a;\n  list.append(li);\n}\n</script>",
+   "hold": 2
+  },
+  {
+   "caption": "classList.add добавя клас и стилът се прилага веднага",
+   "code": "<!doctype html>\n<meta charset=\"utf-8\">\n<style>.hot{color:red}</style>\n<h1 id=\"title\">Програма</h1>\n<ul id=\"list\"></ul>\n<script>\nconst title = document.querySelector(\"#title\");\ntitle.textContent = \"Вечерта на живо\";\nconst list = document.querySelector(\"#list\");\nfor (const a of [\"Откриване\", \"Финал\"]) {\n  const li = document.createElement(\"li\");\n  li.textContent = a;\n  list.append(li);\n}\nlist.lastElementChild.classList.add(\"hot\");\n</script>",
+   "hold": 2.5
+  }
+ ]
+}

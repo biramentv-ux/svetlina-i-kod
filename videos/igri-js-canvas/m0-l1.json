@@ -1,0 +1,33 @@
+{
+ "template": "code",
+ "title": "Игровият цикъл",
+ "subtitle": "Кадри, време и делта",
+ "crumb": "Игри с JavaScript и Canvas · урок 2",
+ "file": "index.html",
+ "lang": "HTML",
+ "previewTitle": "Браузър",
+ "console": true,
+ "outro": "Движи фигура с постоянна скорост.",
+ "steps": [
+  {
+   "caption": "Една рисунка е само статичен кадър.",
+   "code": "<style>body{margin:0}</style>\n<canvas width=\"400\" height=\"160\" style=\"background:#0f172a\"></canvas>\n<script>\nconst canvas = document.querySelector(\"canvas\");\nconst ctx = canvas.getContext(\"2d\");\nconst ball = { x: 30, vx: 180 };\nctx.fillStyle = \"#f97316\";\nctx.beginPath();\nctx.arc(ball.x, 80, 20, 0, Math.PI * 2);\nctx.fill();\n</script>\n",
+   "hold": 1.8
+  },
+  {
+   "caption": "requestAnimationFrame вика функцията преди всеки кадър.",
+   "code": "<style>body{margin:0}</style>\n<canvas width=\"400\" height=\"160\" style=\"background:#0f172a\"></canvas>\n<script>\nconst canvas = document.querySelector(\"canvas\");\nconst ctx = canvas.getContext(\"2d\");\nconst ball = { x: 30 };\n\nfunction frame() {\n  ball.x += 3;                    // 3 пиксела на кадър\n  if (ball.x > 370) ball.x = 30;\n  ctx.clearRect(0, 0, 400, 160);\n  ctx.fillStyle = \"#f97316\";\n  ctx.beginPath();\n  ctx.arc(ball.x, 80, 20, 0, Math.PI * 2);\n  ctx.fill();\n  requestAnimationFrame(frame);\n}\nrequestAnimationFrame(frame);\n</script>\n",
+   "hold": 3
+  },
+  {
+   "caption": "Скорост в пиксели за секунда, умножена по делтата на времето.",
+   "code": "<style>body{margin:0}</style>\n<canvas width=\"400\" height=\"160\" style=\"background:#0f172a\"></canvas>\n<script>\nconst canvas = document.querySelector(\"canvas\");\nconst ctx = canvas.getContext(\"2d\");\nconst ball = { x: 30, vx: 180 };      // пиксела в секунда\nlet last = 0;\n\nfunction frame(now) {\n  const dt = Math.min((now - last) / 1000, 0.1);\n  last = now;\n  ball.x += ball.vx * dt;\n  if (ball.x > 370 || ball.x < 30) ball.vx = -ball.vx;\n  ctx.clearRect(0, 0, 400, 160);\n  ctx.fillStyle = \"#f97316\";\n  ctx.beginPath();\n  ctx.arc(ball.x, 80, 20, 0, Math.PI * 2);\n  ctx.fill();\n  requestAnimationFrame(frame);\n}\nrequestAnimationFrame((t) => { last = t; frame(t); });\n</script>\n",
+   "hold": 3
+  },
+  {
+   "caption": "Броячът показва колко кадъра са минали за секунда.",
+   "code": "<style>body{margin:0}</style>\n<canvas width=\"400\" height=\"160\" style=\"background:#0f172a\"></canvas>\n<script>\nconst canvas = document.querySelector(\"canvas\");\nconst ctx = canvas.getContext(\"2d\");\nconst ball = { x: 30, vx: 180 };      // пиксела в секунда\nlet last = 0, frames = 0;\n\nfunction frame(now) {\n  const dt = Math.min((now - last) / 1000, 0.1);\n  last = now;\n  ball.x += ball.vx * dt;\n  if (ball.x > 370 || ball.x < 30) ball.vx = -ball.vx;\n  ctx.clearRect(0, 0, 400, 160);\n  ctx.fillStyle = \"#f97316\";\n  ctx.beginPath();\n  ctx.arc(ball.x, 80, 20, 0, Math.PI * 2);\n  ctx.fill();\n  frames++;\n  requestAnimationFrame(frame);\n}\nrequestAnimationFrame((t) => { last = t; frame(t); });\nsetTimeout(() => console.log(\"кадри за 1 секунда:\", frames), 1000);\n</script>\n",
+   "hold": 3
+  }
+ ]
+}

@@ -1,0 +1,7 @@
+{"template":"terminal","title":"Файлове, процеси и изходен код","subtitle":"Брояч на думи с Node.js","crumb":"Node.js: сървър, API и бази данни · урок 2","shell":"bash","cwd":"~/broi","outro":"Направи statistika.js с --top=N и кодове 0, 1 и 2.",
+"steps":[
+{"caption":"Имаме текстов файл от три реда.","cmd":"cat tekst.txt","out":"Ранна пролет в Родопите.\nСнегът се топи, а потоците\nшумят по-силно всяка сутрин.","hold":2},
+{"caption":"Скриптът чете файла и брои редове, думи и знаци.","cmd":"node broi.js tekst.txt","out":"Файл: tekst.txt\nРедове: 3\nДуми: 13\nЗнаци: 81","hold":2.5},
+{"caption":"Липсващ файл: съобщение за грешка и код 1.","cmd":"node broi.js nema.txt; echo \"код: $?\"","out":"Няма такъв файл: nema.txt\nкод: 1","hold":2.5},
+{"caption":"Същата логика чете и стандартния вход през тръба.","cmd":"printf 'едно две три\\nчетири\\n' | node stdin.js","out":"думи от stdin: 4","hold":2.5}
+]}

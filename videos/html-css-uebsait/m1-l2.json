@@ -1,0 +1,43 @@
+{
+ "template": "code",
+ "title": "Flexbox и Grid",
+ "subtitle": "Един ред с Flexbox, мрежа с Grid",
+ "crumb": "HTML и CSS · урок 5",
+ "file": "index.html",
+ "lang": "HTML + CSS",
+ "previewTitle": "Браузър",
+ "console": false,
+ "outro": "Направи галерия с Grid и лента за навигация с Flexbox.",
+ "steps": [
+  {
+   "caption": "Без подредба елементите се редят един под друг: това е нормалният поток",
+   "code": "<!doctype html>\n<meta charset=\"utf-8\">\n<nav class=\"lenta\">\n  <b>Ива</b><a>Снимки</a><a>За мен</a>\n</nav>\n<div class=\"mreja\">\n  <div>1</div><div>2</div><div>3</div>\n  <div>4</div><div>5</div><div>6</div>\n</div>\n<style>\nbody { font-family: sans-serif; }\n.lenta { background: #243b53; color: #fff; padding: 12px; }\n.mreja div { background: #9fb3c8; padding: 14px; }\n</style>",
+   "run": true,
+   "hold": 1.6
+  },
+  {
+   "caption": "display: flex на родителя нарежда децата му в един ред",
+   "code": "<!doctype html>\n<meta charset=\"utf-8\">\n<nav class=\"lenta\">\n  <b>Ива</b><a>Снимки</a><a>За мен</a>\n</nav>\n<div class=\"mreja\">\n  <div>1</div><div>2</div><div>3</div>\n  <div>4</div><div>5</div><div>6</div>\n</div>\n<style>\nbody { font-family: sans-serif; }\n.lenta { background: #243b53; color: #fff; padding: 12px;\n  display: flex; }\n.mreja div { background: #9fb3c8; padding: 14px; }\n</style>",
+   "run": true,
+   "hold": 1.4
+  },
+  {
+   "caption": "justify-content разпределя по реда, align-items подравнява вертикално",
+   "code": "<!doctype html>\n<meta charset=\"utf-8\">\n<nav class=\"lenta\">\n  <b>Ива</b><a>Снимки</a><a>За мен</a>\n</nav>\n<div class=\"mreja\">\n  <div>1</div><div>2</div><div>3</div>\n  <div>4</div><div>5</div><div>6</div>\n</div>\n<style>\nbody { font-family: sans-serif; }\n.lenta { background: #243b53; color: #fff; padding: 12px;\n  display: flex;\n  justify-content: space-between;\n  align-items: center; }\n.mreja div { background: #9fb3c8; padding: 14px; }\n</style>",
+   "run": true,
+   "hold": 1.6
+  },
+  {
+   "caption": "display: grid и repeat(3, 1fr): три колони с еднаква ширина",
+   "code": "<!doctype html>\n<meta charset=\"utf-8\">\n<nav class=\"lenta\">\n  <b>Ива</b><a>Снимки</a><a>За мен</a>\n</nav>\n<div class=\"mreja\">\n  <div>1</div><div>2</div><div>3</div>\n  <div>4</div><div>5</div><div>6</div>\n</div>\n<style>\nbody { font-family: sans-serif; }\n.lenta { background: #243b53; color: #fff; padding: 12px;\n  display: flex;\n  justify-content: space-between;\n  align-items: center; }\n.mreja div { background: #9fb3c8; padding: 14px; }\n.mreja { display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  gap: 8px; }\n</style>",
+   "run": true,
+   "hold": 1.6
+  },
+  {
+   "caption": "auto-fill и minmax: колоните се броят сами според ширината",
+   "code": "<!doctype html>\n<meta charset=\"utf-8\">\n<nav class=\"lenta\">\n  <b>Ива</b><a>Снимки</a><a>За мен</a>\n</nav>\n<div class=\"mreja\">\n  <div>1</div><div>2</div><div>3</div>\n  <div>4</div><div>5</div><div>6</div>\n</div>\n<style>\nbody { font-family: sans-serif; }\n.lenta { background: #243b53; color: #fff; padding: 12px;\n  display: flex;\n  justify-content: space-between;\n  align-items: center; }\n.mreja div { background: #9fb3c8; padding: 14px; }\n.mreja { display: grid;\n  grid-template-columns:\n    repeat(auto-fill, minmax(120px, 1fr));\n  gap: 8px; }\n</style>",
+   "run": true,
+   "hold": 2.2
+  }
+ ]
+}

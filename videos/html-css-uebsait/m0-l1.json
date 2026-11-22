@@ -1,0 +1,37 @@
+{
+ "template": "code",
+ "title": "Първата страница",
+ "subtitle": "Скелет, заглавия, списък и връзка",
+ "crumb": "HTML и CSS · урок 2",
+ "file": "index.html",
+ "lang": "HTML",
+ "previewTitle": "Браузър",
+ "console": false,
+ "outro": "Направи страница за себе си: текст, списък и снимка с alt.",
+ "steps": [
+  {
+   "caption": "Скелетът: doctype, html с език, head с кодиране и заглавие, и body",
+   "code": "<!doctype html>\n<html lang=\"bg\">\n<head>\n  <meta charset=\"utf-8\">\n  <title>Ива Колева</title>\n</head>\n<body>\n</body>\n</html>",
+   "run": true,
+   "hold": 1.6
+  },
+  {
+   "caption": "В body: едно заглавие h1 и абзац с важен текст",
+   "code": "<!doctype html>\n<html lang=\"bg\">\n<head>\n  <meta charset=\"utf-8\">\n  <title>Ива Колева</title>\n</head>\n<body>\n  <h1>Ива Колева</h1>\n  <p>Снимам <strong>улици</strong>.</p>\n</body>\n</html>",
+   "run": true,
+   "hold": 1.6
+  },
+  {
+   "caption": "Подзаглавие h2 и неподреден списък с елементи li",
+   "code": "<!doctype html>\n<html lang=\"bg\">\n<head>\n  <meta charset=\"utf-8\">\n  <title>Ива Колева</title>\n</head>\n<body>\n  <h1>Ива Колева</h1>\n  <p>Снимам <strong>улици</strong>.</p>\n  <h2>Какво обичам</h2>\n  <ul>\n    <li>Сутрешна светлина</li>\n    <li>Трамвайни релси</li>\n  </ul>\n</body>\n</html>",
+   "run": true,
+   "hold": 1.6
+  },
+  {
+   "caption": "Връзка с елемента a и атрибута href",
+   "code": "<!doctype html>\n<html lang=\"bg\">\n<head>\n  <meta charset=\"utf-8\">\n  <title>Ива Колева</title>\n</head>\n<body>\n  <h1>Ива Колева</h1>\n  <p>Снимам <strong>улици</strong>.</p>\n  <h2>Какво обичам</h2>\n  <ul>\n    <li>Сутрешна светлина</li>\n    <li>Трамвайни релси</li>\n  </ul>\n  <p><a href=\"galeria.html\">Галерия</a></p>\n</body>\n</html>",
+   "run": true,
+   "hold": 1.6
+  }
+ ]
+}

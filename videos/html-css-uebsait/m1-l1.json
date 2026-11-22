@@ -1,0 +1,43 @@
+{
+ "template": "code",
+ "title": "Селектори и кутиен модел",
+ "subtitle": "Как CSS избира елементи и как ги оразмерява",
+ "crumb": "HTML и CSS · урок 4",
+ "file": "index.html",
+ "lang": "HTML + CSS",
+ "previewTitle": "Браузър",
+ "console": false,
+ "outro": "Оформи страницата си и обясни кое правило печели при конфликт.",
+ "steps": [
+  {
+   "caption": "Страница без стил: браузърът ползва стандартното оформление",
+   "code": "<!doctype html>\n<meta charset=\"utf-8\">\n<h1>Ива Колева</h1>\n<div class=\"karta\">\n  <h2>За мен</h2>\n  <p>Снимам улици.</p>\n</div>\n<div class=\"karta\">\n  <p class=\"belejka\">Скоро.</p>\n</div>\n<style>\n</style>",
+   "run": true,
+   "hold": 1.5
+  },
+  {
+   "caption": "Селектор по елемент: стилът важи за всички h1 и за body",
+   "code": "<!doctype html>\n<meta charset=\"utf-8\">\n<h1>Ива Колева</h1>\n<div class=\"karta\">\n  <h2>За мен</h2>\n  <p>Снимам улици.</p>\n</div>\n<div class=\"karta\">\n  <p class=\"belejka\">Скоро.</p>\n</div>\n<style>\nbody { font-family: sans-serif; }\nh1 { color: #243b53; }\n</style>",
+   "run": true,
+   "hold": 1.3
+  },
+  {
+   "caption": "Селектор по клас: точка пред името, важи за елементите с class",
+   "code": "<!doctype html>\n<meta charset=\"utf-8\">\n<h1>Ива Колева</h1>\n<div class=\"karta\">\n  <h2>За мен</h2>\n  <p>Снимам улици.</p>\n</div>\n<div class=\"karta\">\n  <p class=\"belejka\">Скоро.</p>\n</div>\n<style>\nbody { font-family: sans-serif; }\nh1 { color: #243b53; }\n.karta { background: #fff; }\n</style>",
+   "run": true,
+   "hold": 1.3
+  },
+  {
+   "caption": "Кутиен модел: padding вътре, border около, margin навън",
+   "code": "<!doctype html>\n<meta charset=\"utf-8\">\n<h1>Ива Колева</h1>\n<div class=\"karta\">\n  <h2>За мен</h2>\n  <p>Снимам улици.</p>\n</div>\n<div class=\"karta\">\n  <p class=\"belejka\">Скоро.</p>\n</div>\n<style>\nbody { font-family: sans-serif; }\nh1 { color: #243b53; }\n.karta {\n  background: #fff;\n  padding: 20px;\n  border: 2px solid #243b53;\n  margin: 16px 0;\n}\n</style>",
+   "run": true,
+   "hold": 1.5
+  },
+  {
+   "caption": "Две правила за един абзац: печели по-специфичният селектор (клас)",
+   "code": "<!doctype html>\n<meta charset=\"utf-8\">\n<h1>Ива Колева</h1>\n<div class=\"karta\">\n  <h2>За мен</h2>\n  <p>Снимам улици.</p>\n</div>\n<div class=\"karta\">\n  <p class=\"belejka\">Скоро.</p>\n</div>\n<style>\nbody { font-family: sans-serif; }\nh1 { color: #243b53; }\n.karta {\n  background: #fff;\n  padding: 20px;\n  border: 2px solid #243b53;\n  margin: 16px 0;\n}\np { color: gray; }\n.belejka { color: crimson; }\n</style>",
+   "run": true,
+   "hold": 2.0
+  }
+ ]
+}

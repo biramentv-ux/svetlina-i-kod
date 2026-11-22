@@ -1,0 +1,39 @@
+{
+ "template": "code",
+ "title": "CSS променливи и плавен преход",
+ "subtitle": "Една тема, две цветови схеми, движение само когато е уместно",
+ "crumb": "HTML и CSS · урок 8",
+ "file": "index.html",
+ "lang": "HTML",
+ "previewTitle": "Браузър",
+ "console": false,
+ "outro": "Добави тъмна тема и плавен преход на бутоните на твоята страница.",
+ "steps": [
+  {
+   "caption": "Цветовете живеят в променливи; .dark ги заменя с други стойности.",
+   "code": "<style>\n  :root { --bg: white; --accent: navy; }\n  .dark { --bg: black; --accent: skyblue; }\n  body { background: var(--bg); padding: 2rem; }\n  h1 { color: var(--accent); }\n  .btn { background: var(--accent); color: var(--bg); }\n  .btn { border: 0; transition: transform .25s; }\n  .btn:focus-visible { transform: scale(1.2); }\n</style>\n<body>\n<h1>Здравей!</h1>\n<button class=btn>Запиши ме</button>",
+   "hold": 1
+  },
+  {
+   "caption": "transition прави движението плавно: Tab фокусира бутона.",
+   "hold": 0.8,
+   "keys": [
+    {
+     "key": "Tab",
+     "hold": 150,
+     "after": 300
+    }
+   ]
+  },
+  {
+   "caption": "Един клас на body включва тъмната тема.",
+   "code": "<style>\n  :root { --bg: white; --accent: navy; }\n  .dark { --bg: black; --accent: skyblue; }\n  body { background: var(--bg); padding: 2rem; }\n  h1 { color: var(--accent); }\n  .btn { background: var(--accent); color: var(--bg); }\n  .btn { border: 0; transition: transform .25s; }\n  .btn:focus-visible { transform: scale(1.2); }\n</style>\n<body class=dark>\n<h1>Здравей!</h1>\n<button class=btn>Запиши ме</button>",
+   "hold": 1.2
+  },
+  {
+   "caption": "Който предпочита по-малко движение, не получава преход.",
+   "code": "<style>\n  :root { --bg: white; --accent: navy; }\n  .dark { --bg: black; --accent: skyblue; }\n  body { background: var(--bg); padding: 2rem; }\n  h1 { color: var(--accent); }\n  .btn { background: var(--accent); color: var(--bg); }\n  .btn { border: 0; transition: transform .25s; }\n  .btn:focus-visible { transform: scale(1.2); }\n  @media (prefers-reduced-motion: reduce) {\n    .btn { transition: none; }\n  }\n</style>\n<body class=dark>\n<h1>Здравей!</h1>\n<button class=btn>Запиши ме</button>",
+   "hold": 1.5
+  }
+ ]
+}

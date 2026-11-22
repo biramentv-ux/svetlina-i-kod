@@ -1,0 +1,8 @@
+{"template":"terminal","title":"Една игра – един файл","subtitle":"Опаковане и измерване на кадрите","crumb":"Игри с JavaScript и Canvas · урок 8",
+ "shell":"bash","cwd":"~/zvezdopad","outro":"Опаковай своята игра и измери кадрите си.",
+ "steps":[
+  {"caption":"Играта е разделена на три файла: страница, стилове и код.","cmd":"ls --hide=node_modules","out":"build.mjs\ngame.js\nindex.html\nmerki.mjs\nstyle.css","hold":2.5},
+  {"caption":"Малък скрипт вмъква стиловете и кода в самата страница.","cmd":"node build.mjs","out":"igra.html: 7740 байта","hold":2.5},
+  {"caption":"Проверка: в готовия файл няма външни src и href.","cmd":"grep -c -E 'src=|href=' igra.html","out":"0","hold":2.5},
+  {"caption":"Измерваме реални кадри: средно, 95-и персентил и най-бавен кадър.","cmd":"node merki.mjs igra.html","out":"кадри: 300\nсредно: 16.8 ms (60 fps)\n95-и персентил: 16.7 ms\nнай-бавен: 33.3 ms\nкадри над 20 ms: 2\nгрешки: няма","hold":4}
+ ]}

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { content, type Content } from "./content";
 import { full } from "./content/full";
 import { videos, extVideos } from "./content/videos";
+import { lessonVideos, type LessonVideo } from "./content/lessonVideos";
 import { marked } from "marked";
 import type { Quiz } from "./content/types";
 import { courses, lessonCount, totalMinutes, fmtHours, type Course, type LessonType } from "./courses";
@@ -628,7 +629,8 @@ function Landing({ theme }: { theme: Theme }) {
   );
 }
 
-const STATUS = ["Всички", "Незапочнати", "В процес", "Завършени"] as const;
+const STATUS = ["Всички", "Незапочнати", "В процес", "Завършени", "С видео"] as const;
+const hasVideo = (c: Course) => keysOf(c).some((k) => lessonVideos[k]);
 const CATS = ["Всички", "Основи", "Програмиране", "Софтуер", "Сцена", "Творчество", "Архив", "ИИ и анализ", "Уеб и игри"] as const;
 
 function Catalog() {
@@ -642,7 +644,7 @@ function Catalog() {
       courses.filter(
         (c) =>
           (cat === "Всички" || c.cat === cat) &&
-          (st === "Всички" || status(c) === st) &&
+          (st === "Всички" || (st === "С видео" ? hasVideo(c) : status(c) === st)) &&
           (c.name + c.summary + c.level + c.tools.join(" ")).toLowerCase().includes(q.trim().toLowerCase())
       ),
     [cat, q, st]
@@ -821,6 +823,7 @@ function CoursePage({ c }: { c: Course }) {
                             >
                               {title}
                             </button>
+                            {lessonVideos[k] && <span className="hidden rounded-full border border-line px-2 py-0.5 text-[11px] text-accent sm:inline">▶ видео</span>}
                             {type !== "v" && (
                               <span className={`hidden rounded-full border px-2 py-0.5 text-[11px] sm:inline ${TYPE[type].cls}`}>{TYPE[type].label}</span>
                             )}
@@ -1336,6 +1339,7 @@ function LessonPage({ c, mi, li, sec }: { c: Course; mi: number; li: number; sec
           <LessonTools k={k} />
 
           {videos[k] && <VideoBlock url={videos[k]} />}
+          {lessonVideos[k] && <ScreenVideo v={lessonVideos[k]} href={lessonHref(c.slug, mi, li)} />}
 
           {html && <Listen root={body} dep={k} />}
 
@@ -1452,6 +1456,40 @@ function embedUrl(u: string): { kind: "iframe" | "video"; src: string } | null {
   } catch {
     return null;
   }
+}
+
+const SITE = "https://shkola.dyrakarmy.eu/";
+const mmss = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+
+/** Кратко беззвучно видео със субтитри във кадъра; има и текстов вариант. Файлът се сервира от живия сайт. */
+function ScreenVideo({ v, href }: { v: LessonVideo; href: string }) {
+  const [src, setSrc] = useState(v.src);
+  const [failed, setFailed] = useState(false);
+  const ref = useRef<HTMLVideoElement>(null);
+  const onError = () => (src === v.src ? setSrc(SITE + v.src) : setFailed(true));
+  return (
+    <section className="no-print mt-8" aria-label="Видео към урока">
+      <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-line bg-black">
+        {failed ? (
+          <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center text-sm text-mute">
+            <p>Видеото не се зарежда в този изглед. То се възпроизвежда на живия сайт.</p>
+            <a className="btn" href={SITE + href} target="_blank" rel="noreferrer">Отвори на живия сайт</a>
+          </div>
+        ) : (
+          <video ref={ref} key={src} src={src} controls playsInline preload="metadata" onError={onError} className="h-full w-full" aria-label="Кратко видео със субтитри във кадъра" />
+        )}
+      </div>
+      <p className="mt-2 text-xs text-faint">Видео без звук, със субтитри във кадъра · {mmss(v.dur)} · {Math.round(v.size / 1024)} КБ</p>
+      <details className="mt-2 rounded-xl border border-line">
+        <summary className="cursor-pointer px-4 py-2.5 text-sm font-semibold">Текстов вариант на видеото</summary>
+        <ol className="space-y-1 border-t border-line px-4 py-3 text-sm text-mute">
+          {v.cues.map(([t, s], i) => (
+            <li key={i}><button className="mr-2 font-mono text-xs text-accent hover:underline" onClick={() => { const e = ref.current; if (e) { e.currentTime = t; void e.play().catch(() => {}); } }}>{mmss(t)}</button>{s}</li>
+          ))}
+        </ol>
+      </details>
+    </section>
+  );
 }
 
 function VideoBlock({ url }: { url?: string }) {

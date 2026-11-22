@@ -37,6 +37,7 @@ jobs:
           mkdir -p site
           cp deploy/index.html site/index.html
           cp deploy/index.html site/404.html
+          if [ -d videos ]; then (cd videos && find . -name '*.mp4' -exec install -D -m 644 '{}' ../site/video/'{}' \;); fi
           touch site/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:

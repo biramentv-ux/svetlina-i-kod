@@ -1,0 +1,8 @@
+{"template":"terminal","title":"REST API за задачи","subtitle":"Методи, JSON и статус кодове","crumb":"Node.js: сървър, API и бази данни · урок 4","shell":"bash","cwd":"~/api","outro":"Направи API за книги със същите шест действия.",
+"steps":[
+{"caption":"Сървърът работи в друг терминал. Четем списъка със задачи.","cmd":"B=http://127.0.0.1:3000/api/zadachi; curl -s $B","out":"[{\"id\":1,\"tekst\":\"Купи хляб\",\"gotova\":false},{\"id\":2,\"tekst\":\"Прочети урока\",\"gotova\":true}]","hold":2.5},
+{"caption":"POST създава нова задача (в урока: 201 и Location).","cmd":"curl -s -X POST -H \"Content-Type: application/json\" -d '{\"tekst\":\"Позвъни на леля\"}' $B","out":"{\"id\":3,\"tekst\":\"Позвъни на леля\",\"gotova\":false}","hold":2.5},
+{"caption":"Празен текст: валидирането връща 400 със съобщение.","cmd":"curl -s -X POST -d '{\"tekst\":\"\"}' $B","out":"{\"greshka\":\"Полето tekst трябва да е непразен низ до 200 знака\"}","hold":2.5},
+{"caption":"PATCH променя само изпратеното поле.","cmd":"curl -s -X PATCH -d '{\"gotova\":true}' $B/3","out":"{\"id\":3,\"tekst\":\"Позвъни на леля\",\"gotova\":true}","hold":2.5},
+{"caption":"DELETE връща статус 204 – без тяло.","cmd":"curl -s -o /dev/null -w \"%{http_code}\\n\" -X DELETE $B/3","out":"204","hold":2.5}
+]}

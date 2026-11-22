@@ -1,0 +1,41 @@
+{
+ "template": "terminal",
+ "title": "node:sqlite: база в един файл",
+ "subtitle": "Данните оцеляват между пусканията",
+ "crumb": "Node.js: сървър, API и бази данни · урок 6",
+ "shell": "bash",
+ "cwd": "~/zadachi",
+ "outro": "Запиши задачите си в SQLite и ги прочети след рестарт.",
+ "steps": [
+  {
+   "caption": "Малък скрипт: отваря файл на базата и записва ред",
+   "cmd": "cat demo.mjs",
+   "out": "import { DatabaseSync } from \"node:sqlite\";\n\nconst db = new DatabaseSync(\"zadachi.db\");\ndb.exec(\"CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY, title TEXT NOT NULL)\");\n\nconst insert = db.prepare(\"INSERT INTO tasks (title) VALUES (?)\");\ninsert.run(\"Купи хляб\");\n\nconst rows = db.prepare(\"SELECT id, title FROM tasks\").all();\nconsole.log(\"Редове:\", rows.length, JSON.stringify(rows));\ndb.close();",
+   "hold": 3
+  },
+  {
+   "caption": "Първо пускане: редът е записан, а Node предупреждава, че модулът е експериментален",
+   "cmd": "node demo.mjs",
+   "out": "Редове: 1 [{\"id\":1,\"title\":\"Купи хляб\"}]\n(node:12529) ExperimentalWarning: SQLite is an experimental feature and might change at any time\n(Use `node --trace-warnings ...` to show where the warning was created)",
+   "hold": 4
+  },
+  {
+   "caption": "Второ пускане: данните са във файла и остават между изпълненията",
+   "cmd": "node demo.mjs",
+   "out": "Редове: 2 [{\"id\":1,\"title\":\"Купи хляб\"},{\"id\":2,\"title\":\"Купи хляб\"}]\n(node:12538) ExperimentalWarning: SQLite is an experimental feature and might change at any time\n(Use `node --trace-warnings ...` to show where the warning was created)",
+   "hold": 4
+  },
+  {
+   "caption": "Предупреждението е в stderr и се скрива с флаг, но не и причината за него",
+   "cmd": "node --no-warnings demo.mjs",
+   "out": "Редове: 3 [{\"id\":1,\"title\":\"Купи хляб\"},{\"id\":2,\"title\":\"Купи хляб\"},{\"id\":3,\"title\":\"Купи хляб\"}]",
+   "hold": 4
+  },
+  {
+   "caption": "Файлът на базата стои до скрипта",
+   "cmd": "ls -l zadachi.db | awk '{print $5, $9}'",
+   "out": "8192 zadachi.db",
+   "hold": 3
+  }
+ ]
+}

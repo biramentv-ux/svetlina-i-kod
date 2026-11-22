@@ -5,6 +5,7 @@ cd "$(dirname "$0")/.."
 SITE_URL="${SITE_URL:-https://shkola.dyrakarmy.eu/}"
 node scripts/gen-fonts.mjs
 node scripts/gen-lessons.mjs
+node scripts/gen-videos.mjs
 # Parcel сглобява приложението, html-inline вгражда всичко в един HTML файл
 rm -rf dist bundle.html
 pnpm exec parcel build index.html --dist-dir dist --no-source-maps --log-level error
