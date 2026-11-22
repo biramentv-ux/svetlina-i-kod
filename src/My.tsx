@@ -1,6 +1,7 @@
 // „Моят напредък“, удостоверение и инструменти в урока (отметки, бележки, четене).
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { courses, lessonCount, type Course } from "./courses";
+import { content } from "./content";
 import {
   useStore, MARKS, NOTES, ACTIVITY, READER, NAME, READER_DEFAULT, FONT_SIZES, type Reader,
   today, streak, exportData, importData, clearData, download,
@@ -111,6 +112,14 @@ export function MyPage() {
           </div>
         ))}
       </div>
+
+      <a href="#/pregovor" className="card group mt-4 flex items-center justify-between gap-4 p-5">
+        <span>
+          <span className="eyebrow text-mute">Преговор с карти</span>
+          <span className="mt-1.5 block font-semibold group-hover:text-accent">Повтори въпросите и уроците, които са за днес</span>
+        </span>
+        <span className="text-accent">→</span>
+      </a>
 
       {lastT && (
         <a href={lastT.href} className="card group mt-4 flex items-center justify-between gap-4 p-5">
@@ -280,6 +289,7 @@ export function LessonTools({ k }: { k: string }) {
       <button onClick={() => setR({ ...r, wide: !r.wide })} aria-pressed={r.wide} className={`chip hidden px-3 py-1.5 text-sm lg:inline-flex ${r.wide ? "border-accent text-accent" : "text-soft hover:text-accent"}`}>
         Широк текст
       </button>
+      <FocusTimer />
       <button onClick={() => print()} className="chip px-3 py-1.5 text-sm text-soft hover:text-accent">Отпечатай</button>
     </div>
   );
@@ -317,4 +327,186 @@ export function Notes({ k }: { k: string }) {
       />
     </section>
   );
+}
+
+/* ───────── Преговор с карти (система на Лайтнер) ───────── */
+const REVIEW = "sk-review";
+const BOXES = [0, 1, 3, 7, 16]; // дни до следващото показване за кутия 0…4
+type Card =
+  | { id: string; kind: "q"; course: Course; lesson: string; q: string; opts: string[]; correct: number }
+  | { id: string; kind: "l"; course: Course; lesson: string; s: string; k: string[] };
+
+function allCards(done: Record<string, boolean>, scope: "started" | "all"): Card[] {
+  const out: Card[] = [];
+  for (const c of courses) {
+    if (scope === "started" && doneIn(c, done) === 0) continue;
+    (content[c.slug] || []).forEach((m, mi) =>
+      m.forEach((x, li) => {
+        const lesson = c.modules[mi]?.l[li]?.[0];
+        if (!lesson) return;
+        const key = `${c.slug}:${mi}:${li}`;
+        x.z?.forEach(([q, opts, correct], qi) => out.push({ id: `q:${key}:${qi}`, kind: "q", course: c, lesson, q, opts, correct }));
+        if (!x.z && done[key] && x.k.length) out.push({ id: `l:${key}`, kind: "l", course: c, lesson, s: x.s, k: x.k });
+      })
+    );
+  }
+  return out;
+}
+
+const addDays = (n: number) => { const d = new Date(); d.setDate(d.getDate() + n); return today(d); };
+// Разбъркване, зависещо само от id и деня – стабилно при презареждане
+const rnd = (s: string) => { let h = 2166136261; for (const ch of s) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return (h >>> 0) / 4294967296; };
+
+export function ReviewPage() {
+  const [done] = useStore<Record<string, boolean>>(PROGRESS, {});
+  const [state, setState] = useStore<Record<string, { b: number; due: string }>>(REVIEW, {});
+  const [scope, setScope] = useState<"started" | "all">(() => (Object.values(done).some(Boolean) ? "started" : "all"));
+  const [i, setI] = useState(0);
+  const [pick, setPick] = useState<number | null>(null);
+  const [shown, setShown] = useState(false);
+  const [score, setScore] = useState({ ok: 0, all: 0 });
+  useEffect(() => { window.scrollTo(0, 0); }, []);
+
+  const cards = useMemo(() => allCards(done, scope), [scope]);
+  const t = today();
+  const queue = useMemo(
+    () => cards.filter((c) => (state[c.id]?.due ?? t) <= t).sort((a, b) => rnd(a.id + t) - rnd(b.id + t)).slice(0, 15),
+    [cards, scope]
+  );
+  const card = queue[i];
+  const order = useMemo(() => (card?.kind === "q" ? card.opts.map((_, k) => k).sort((a, b) => rnd(card.id + a + t) - rnd(card.id + b + t)) : []), [card?.id]);
+  const learned = cards.filter((c) => (state[c.id]?.b ?? 0) >= 3).length;
+
+  const grade = (ok: boolean) => {
+    const b = ok ? Math.min(4, (state[card.id]?.b ?? 0) + 1) : 0;
+    setState({ ...state, [card.id]: { b, due: addDays(ok ? BOXES[b] : 0) } });
+    setScore((s) => ({ ok: s.ok + (ok ? 1 : 0), all: s.all + 1 }));
+    setPick(null); setShown(false); setI(i + 1);
+  };
+
+  return (
+    <div className="mx-auto max-w-3xl px-4 pb-20 pt-10 sm:px-6">
+      <a href="#/moi" className="text-sm text-mute hover:text-ink">← Моят напредък</a>
+      <p className="eyebrow mt-8 text-accent">Преговор с карти</p>
+      <h1 className="display mt-3 text-[2rem] leading-tight sm:text-5xl">Преговор</h1>
+      <p className="mt-4 text-soft">
+        Въпросите от тестовете и картите от завършените уроци се връщат през все по-дълги интервали: на следващия ден, след 3, 7 и 16 дни.
+        Грешният отговор връща картата в началото.
+      </p>
+      <div className="mt-6 flex flex-wrap items-center gap-2" role="group" aria-label="Обхват">
+        {([["started", "Започнатите курсове"], ["all", "Всички курсове"]] as const).map(([v, l]) => (
+          <button key={v} onClick={() => { setScope(v); setI(0); setPick(null); setShown(false); }} aria-pressed={scope === v}
+            className={`rounded-full border px-3.5 py-1.5 text-sm ${scope === v ? "border-primary bg-primary font-semibold text-on-primary" : "border-line text-mute hover:text-fg"}`}>{l}</button>
+        ))}
+        <span className="ml-auto font-mono text-xs text-mute">{learned} / {cards.length} научени</span>
+      </div>
+
+      <div className="panel mt-8 p-6 sm:p-8">
+        {!card ? (
+          <div className="text-center">
+            <p className="display text-2xl">{score.all ? `Готово: ${score.ok} от ${score.all} верни` : cards.length ? "Няма карти за днес" : "Още няма карти"}</p>
+            <p className="mt-3 text-mute">
+              {cards.length ? "Ела утре за следващите карти." : "Завърши урок или избери „Всички курсове“, за да се появят карти."}
+            </p>
+            {score.all > 0 && queue.length === 15 && (
+              <button onClick={() => { setI(0); setScore({ ok: 0, all: 0 }); location.reload(); }} className="btn-ghost mt-6 px-4 py-2 text-sm">Още карти</button>
+            )}
+          </div>
+        ) : (
+          <div key={card.id} className="rise">
+            <div className="flex items-center justify-between gap-3 text-xs text-mute">
+              <span className="truncate">{card.course.name}</span>
+              <span className="font-mono">{i + 1} / {queue.length}</span>
+            </div>
+            <p className="mt-1 text-xs text-faint">{card.lesson}</p>
+            {card.kind === "q" ? (
+              <>
+                <p className="mt-5 text-lg font-semibold text-ink">{card.q}</p>
+                <div className="mt-4 space-y-2">
+                  {order.map((k) => {
+                    const st = pick === null ? "border-line hover:border-accent" : k === card.correct ? "border-second text-second" : k === pick ? "border-danger text-danger" : "border-line opacity-60";
+                    return (
+                      <button key={k} disabled={pick !== null} onClick={() => setPick(k)} className={`block w-full rounded-xl border px-4 py-3 text-left text-[15px] ${st}`}>
+                        {card.opts[k]}
+                      </button>
+                    );
+                  })}
+                </div>
+                {pick !== null && (
+                  <button onClick={() => grade(pick === card.correct)} className="btn mt-5 px-5 py-2.5 text-sm" autoFocus>
+                    {pick === card.correct ? "Вярно – напред" : "Ще го видиш пак – напред"}
+                  </button>
+                )}
+              </>
+            ) : (
+              <>
+                <p className="mt-5 text-lg font-semibold text-ink">Кои са основните идеи на урока „{card.lesson}“?</p>
+                <p className="mt-2 text-sm text-mute">Отговори си наум, после отвори картата.</p>
+                {!shown ? (
+                  <button onClick={() => setShown(true)} className="btn-ghost mt-5 px-5 py-2.5 text-sm">Покажи отговора</button>
+                ) : (
+                  <>
+                    <p className="mt-5 text-soft">{card.s}</p>
+                    <ul className="mt-3 space-y-1.5 text-sm text-soft">{card.k.map((x) => <li key={x}>– {x}</li>)}</ul>
+                    <div className="mt-6 flex flex-wrap gap-2">
+                      <button onClick={() => grade(true)} className="btn px-5 py-2.5 text-sm">Знаех го</button>
+                      <button onClick={() => grade(false)} className="btn-ghost px-5 py-2.5 text-sm">Не съвсем</button>
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ───────── Таймер за фокус (25 минути) ───────── */
+const FOCUS = "sk-focus";
+export function FocusTimer() {
+  const [f, setF] = useStore<{ end: number; left: number } | null>(FOCUS, null);
+  const [, tick] = useState(0);
+  const running = !!f && f.end > 0;
+  const left = !f ? 25 * 60 : running ? Math.max(0, Math.round((f.end - Date.now()) / 1000)) : f.left;
+  useEffect(() => {
+    if (!running) return;
+    const id = setInterval(() => tick((x) => x + 1), 1000);
+    return () => clearInterval(id);
+  }, [running]);
+  useEffect(() => {
+    if (running && left === 0) {
+      setF(null);
+      try {
+        const a = new AudioContext(); const o = a.createOscillator(); const g = a.createGain();
+        o.frequency.value = 660; g.gain.setValueAtTime(0.15, a.currentTime); g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + 1.2);
+        o.connect(g).connect(a.destination); o.start(); o.stop(a.currentTime + 1.2);
+      } catch { /* ignore */ }
+      alertDone();
+    }
+  }, [left, running]);
+  const mm = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
+  return (
+    <span className="chip gap-0 p-0 text-sm text-soft" role="group" aria-label="Таймер за фокус">
+      <button
+        onClick={() => setF(running ? { end: 0, left } : { end: Date.now() + left * 1000, left })}
+        className={`px-3 py-1.5 hover:text-accent ${running ? "text-accent" : ""}`}
+        aria-label={running ? "Пауза на таймера" : "Пусни таймер за фокус"}
+      >
+        {running ? "❚❚" : "▶"} <span className="font-mono">{mm}</span>
+      </button>
+      {f && (
+        <>
+          <span className="h-4 w-px bg-line" />
+          <button onClick={() => setF(null)} className="px-2.5 py-1.5 hover:text-accent" aria-label="Нулирай таймера">↺</button>
+        </>
+      )}
+    </span>
+  );
+}
+function alertDone() {
+  const t = document.title;
+  document.title = "Време за почивка – Светлина и код";
+  setTimeout(() => (document.title = t), 8000);
 }

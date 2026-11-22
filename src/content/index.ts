@@ -18,6 +18,10 @@ import { c16 } from "./c16";
 import { c17 } from "./c17";
 import { c18 } from "./c18";
 import { c19 } from "./c19";
+import { c20 } from "./c20";
+import { c21 } from "./c21";
+import { c22 } from "./c22";
+import { c23 } from "./c23";
 
 export const content: Record<string, Content[][]> = {
   "nachinaesht-vj": c1,
@@ -39,5 +43,9 @@ export const content: Record<string, Content[][]> = {
   "sheydari-glsl": c17,
   "linux-komanden-red": c18,
   "matematika-za-ii": c19,
+  "c-sistemno": c20,
+  "cpp-moderen": c21,
+  "rust-ot-nulata": c22,
+  "asembler-x86-arm": c23,
 };
 export type { Content } from "./types";

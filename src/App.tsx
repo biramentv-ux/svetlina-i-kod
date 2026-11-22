@@ -5,7 +5,7 @@ import { videos, extVideos } from "./content/videos";
 import { marked } from "marked";
 import type { Quiz } from "./content/types";
 import { courses, lessonCount, totalMinutes, fmtHours, type Course, type LessonType } from "./courses";
-import { MyPage, Certificate, LessonTools, Notes, useReader } from "./My";
+import { MyPage, Certificate, LessonTools, Notes, useReader, ReviewPage } from "./My";
 import { logActivity, FONT_SIZES } from "./store";
 
 /* ====== РЕДАКТИРАЙ ТУК ====== */
@@ -45,6 +45,12 @@ const tracks: { n: string; title: string; text: string; slugs: string[] }[] = [
     title: "Код от нулата",
     text: "Python, C, Linux и как кодът става машина – основата под ИИ и reverse engineering.",
     slugs: ["programirane-ot-nulata", "linux-komanden-red"],
+  },
+  {
+    n: "E",
+    title: "Системно програмиране",
+    text: "C в дълбочина, модерен C++, Rust и асемблер за x86-64 и ARM64 – кодът най-близо до машината.",
+    slugs: ["c-sistemno", "cpp-moderen", "rust-ot-nulata", "asembler-x86-arm"],
   },
 ];
 
@@ -323,6 +329,7 @@ function Shell({ children, theme, toggleTheme }: { children: ReactNode; theme: T
             <ul className="mt-3 space-y-2 text-sm text-soft">
               <li><a href="#kursove" className="hover:text-accent">Всички курсове</a></li>
               <li><a href="#/moi" className="hover:text-accent">Моят напредък</a></li>
+              <li><a href="#/pregovor" className="hover:text-accent">Преговор с карти</a></li>
               <li><button onClick={() => setHelp(true)} className="hover:text-accent">Клавишни комбинации</button></li>
               <li><a href="#vaprosi" className="hover:text-accent">Въпроси</a></li>
               <li><button onClick={() => setSearch(true)} className="hover:text-accent">Търсене</button></li>
@@ -615,22 +622,26 @@ function Landing({ theme }: { theme: Theme }) {
   );
 }
 
+const STATUS = ["Всички", "Незапочнати", "В процес", "Завършени"] as const;
 const CATS = ["Всички", "Основи", "Програмиране", "Софтуер", "Сцена", "Творчество", "Архив", "ИИ и анализ"] as const;
 
 function Catalog() {
   const [cat, setCat] = useState<(typeof CATS)[number]>("Всички");
   const [q, setQ] = useState("");
   const [done] = useState(loadDone);
+  const [st, setSt] = useState<(typeof STATUS)[number]>("Всички");
+  const status = (c: Course) => { const d = keysOf(c).filter((k) => done[k]).length; return d === 0 ? "Незапочнати" : d === lessonCount(c) ? "Завършени" : "В процес"; };
   const list = useMemo(
     () =>
       courses.filter(
         (c) =>
           (cat === "Всички" || c.cat === cat) &&
+          (st === "Всички" || status(c) === st) &&
           (c.name + c.summary + c.level + c.tools.join(" ")).toLowerCase().includes(q.trim().toLowerCase())
       ),
-    [cat, q]
+    [cat, q, st]
   );
-  useReveal(`${cat}|${q}`);
+  useReveal(`${cat}|${q}|${st}`);
   return (
     <section id="kursove" className="mx-auto max-w-6xl scroll-mt-16 px-4 py-20 sm:px-6">
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
@@ -669,6 +680,15 @@ function Catalog() {
           );
         })}
       </div>
+      {Object.values(done).some(Boolean) && (
+        <div className="-mt-2 mb-6 flex flex-wrap items-center gap-2 text-sm" role="group" aria-label="Напредък">
+          <span className="eyebrow mr-1 text-faint">Напредък</span>
+          {STATUS.map((x) => (
+            <button key={x} onClick={() => setSt(x)} aria-pressed={st === x}
+              className={`rounded-full border px-3 py-1 ${st === x ? "border-accent text-accent" : "border-line text-mute hover:text-fg"}`}>{x}</button>
+          ))}
+        </div>
+      )}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {list.map((c, i) => {
           const n = lessonCount(c);
@@ -861,19 +881,21 @@ export default function App() {
   const [theme, toggleTheme] = useTheme();
   const cert = hash.match(/^#\/sertifikat\/([^/]+)$/);
   const certCourse = cert ? courses.find((c) => c.slug === cert[1]) : undefined;
-  const m = hash.match(/^#\/kurs\/([^/]+)(?:\/(\d+)-(\d+))?$/);
+  const m = hash.match(/^#\/kurs\/([^/]+)(?:\/(\d+)-(\d+)(?:\/(\d+))?)?$/);
   const course = m ? courses.find((c) => c.slug === m[1]) : undefined;
   const lesson = m && m[2] !== undefined ? { mi: Number(m[2]), li: Number(m[3]) } : null;
   return (
     <Shell theme={theme} toggleTheme={toggleTheme}>
       {hash === "#/moi" ? (
         <MyPage />
+      ) : hash === "#/pregovor" ? (
+        <ReviewPage />
       ) : certCourse ? (
         <Certificate c={certCourse} />
       ) : !course ? (
         <Landing theme={theme} />
       ) : lesson && course.modules[lesson.mi]?.l[lesson.li] ? (
-        <LessonPage c={course} mi={lesson.mi} li={lesson.li} />
+        <LessonPage c={course} mi={lesson.mi} li={lesson.li} sec={m?.[4] !== undefined ? Number(m[4]) : null} />
       ) : (
         <CoursePage c={course} />
       )}
@@ -1030,7 +1052,7 @@ function Listen({ root, dep }: { root: React.RefObject<HTMLDivElement | null>; d
     const items: { el: Element; text: string }[] = [];
     const el = root.current;
     if (!el) return items;
-    const push = (e: Element) => { for (const t of splitText(e.textContent || "")) items.push({ el: e, text: t }); };
+    const push = (e: Element) => { const c = e.cloneNode(true) as Element; c.querySelectorAll(".anchor, .copy").forEach((x) => x.remove()); for (const t of splitText(c.textContent || "")) items.push({ el: e, text: t }); };
     for (const ch of Array.from(el.children)) {
       const tag = ch.tagName;
       if (tag === "H2" && (ch.textContent || "").trim().startsWith("Бележки за видеото")) break;
@@ -1164,7 +1186,7 @@ const strip = (s: string) => {
   return t.value;
 };
 
-function LessonPage({ c, mi, li }: { c: Course; mi: number; li: number }) {
+function LessonPage({ c, mi, li, sec }: { c: Course; mi: number; li: number; sec: number | null }) {
   const [done, setDone] = useState(loadDone);
   const k = `${c.slug}:${mi}:${li}`;
   const [title, min, type = "v"] = c.modules[mi].l[li];
@@ -1252,6 +1274,28 @@ function LessonPage({ c, mi, li }: { c: Course; mi: number; li: number }) {
       });
       pre.appendChild(b);
     });
+  }, [html]);
+
+  // Връзка към раздел: бутон „#“ до всяко заглавие и отваряне на раздела от адреса
+  useEffect(() => {
+    const el = body.current;
+    if (!el) return;
+    el.querySelectorAll("h2").forEach((h, i) => {
+      if (h.querySelector(".anchor")) return;
+      const b = document.createElement("button");
+      b.className = "anchor no-print";
+      b.type = "button";
+      b.textContent = "#";
+      b.setAttribute("aria-label", "Копирай връзка към този раздел");
+      b.addEventListener("click", async () => {
+        const url = `${location.origin}${location.pathname}#/kurs/${c.slug}/${mi}-${li}/${i}`;
+        history.replaceState(null, "", url);
+        try { await navigator.clipboard.writeText(url); b.textContent = "✓"; } catch { b.textContent = "#"; }
+        setTimeout(() => (b.textContent = "#"), 1500);
+      });
+      h.appendChild(b);
+    });
+    if (sec !== null) setTimeout(() => document.getElementById(`sec-${sec}`)?.scrollIntoView({ block: "start" }), 50);
   }, [html]);
 
   const jump = (i: number) => document.getElementById(`sec-${i}`)?.scrollIntoView({ behavior: "smooth", block: "start" });

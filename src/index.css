@@ -166,3 +166,8 @@ summary::-webkit-details-marker { display: none; }
   .prose-vj, .prose-vj h2, .prose-vj h3, .prose-vj strong { color: #000; }
   .prose-vj pre { background: #f4f4f4; color: #000; }
 }
+.prose-vj h2 .anchor { margin-left: 0.4em; border: 0; background: none; color: var(--faint); font: 600 0.7em/1 "JetBrains Mono", monospace; opacity: 0; cursor: pointer; transition: opacity 0.15s, color 0.15s; vertical-align: middle; }
+.prose-vj h2:hover .anchor, .prose-vj .anchor:focus-visible { opacity: 1; }
+.prose-vj .anchor:hover { color: var(--accent); }
+@media (hover: none) { .prose-vj h2 .anchor { opacity: 0.6; } }
+.cert { break-inside: avoid; }
