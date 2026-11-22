@@ -5,6 +5,8 @@ import { videos, extVideos } from "./content/videos";
 import { marked } from "marked";
 import type { Quiz } from "./content/types";
 import { courses, lessonCount, totalMinutes, fmtHours, type Course, type LessonType } from "./courses";
+import { MyPage, Certificate, LessonTools, Notes, useReader } from "./My";
+import { logActivity, FONT_SIZES } from "./store";
 
 /* ====== РЕДАКТИРАЙ ТУК ====== */
 const CONFIG = {
@@ -15,7 +17,7 @@ const CONFIG = {
 const features = [
   { n: "01", title: "Пълни писмени уроци", text: "Всеки урок е завършен текст с обяснения, стъпки, пример от практиката и чести грешки – не само резюме." },
   { n: "02", title: "Упражнения, тестове и проекти", text: "Учиш с ръцете си: задача с критерии за самопроверка към всеки урок, тестове по модули и курсови проекти." },
-  { n: "03", title: "Напредъкът остава при теб", text: "Отбелязваш завършените уроци и продължаваш оттам, докъдето си стигнал. Всичко се пази само в твоя браузър." },
+  { n: "03", title: "Напредъкът остава при теб", text: "Отметки, бележки, дневник на активността и удостоверение за завършен курс. Всичко се пази в браузъра и се пренася с един файл." },
   { n: "04", title: "Един файл, работи и офлайн", text: "Цялата школа е един HTML файл без сървър и регистрация. Можеш да я свалиш и да учиш без интернет." },
 ];
 
@@ -24,13 +26,13 @@ const tracks: { n: string; title: string; text: string; slugs: string[] }[] = [
     n: "A",
     title: "Визия на живо",
     text: "От първия микс до сцената: сигнал, софтуер, съдържание и работа в екип.",
-    slugs: ["nachinaesht-vj", "resolume", "saveti-i-trikove", "synesthesia", "nestdrop", "notch-vfx", "2d-animaciya", "back-to-back", "zapisi-ot-strimove"],
+    slugs: ["nachinaesht-vj", "resolume", "saveti-i-trikove", "synesthesia", "nestdrop", "notch-vfx", "2d-animaciya", "sheydari-glsl", "back-to-back", "zapisi-ot-strimove"],
   },
   {
     n: "B",
     title: "Изкуствен интелект",
     text: "От първия промпт през агентите и ИИ за визия до това как се обучават моделите.",
-    slugs: ["rabota-s-ii", "ii-agenti-i-avtomatizaciya", "ii-za-vizualni-artisti", "ii-ot-perceptrona-do-llm"],
+    slugs: ["rabota-s-ii", "ii-agenti-i-avtomatizaciya", "ii-za-vizualni-artisti", "matematika-za-ii", "ii-ot-perceptrona-do-llm"],
   },
   {
     n: "C",
@@ -41,8 +43,8 @@ const tracks: { n: string; title: string; text: string; slugs: string[] }[] = [
   {
     n: "D",
     title: "Код от нулата",
-    text: "Python, C и как кодът става машина – основата под ИИ и reverse engineering.",
-    slugs: ["programirane-ot-nulata"],
+    text: "Python, C, Linux и как кодът става машина – основата под ИИ и reverse engineering.",
+    slugs: ["programirane-ot-nulata", "linux-komanden-red"],
   },
 ];
 
@@ -50,7 +52,7 @@ const faqs = [
   ["Нужен ли ми е опит?", "Не. Всяка пътека започва от нулата, а към всеки курс пише какво трябва да знаеш предварително."],
   ["Какъв софтуер ми трябва?", "Започваш с безплатни и пробни версии. В уроците сочим алтернативи за всеки бюджет, включително с отворен код."],
   ["Наистина ли всичко е безплатно?", "Да. Всички курсове и уроци са отворени – без абонамент, без регистрация и без скрити такси."],
-  ["Къде се пази напредъкът ми?", "Само в твоя браузър. Школата не събира данни и няма профили, затова напредъкът не се пренася между устройства."],
+  ["Къде се пази напредъкът ми?", "Само в твоя браузър. Школата не събира данни и няма профили. За да продължиш на друго устройство, изнеси напредъка от „Моят напредък“ и го внеси там."],
   ["Има ли видео уроци?", "Уроците са писмени. Към някои курсове има връзки към официални видео материали, а в края на всеки урок има бележки за бъдеща видео версия."],
   ["На какъв език са уроците?", "Изцяло на български, с термините на английски там, където това е стандартът в професията."],
 ];
@@ -90,7 +92,9 @@ function loadDone(): Record<string, boolean> {
   try { return JSON.parse(localStorage.getItem(KEY) || "{}"); } catch { return {}; }
 }
 function saveDone(d: Record<string, boolean>) {
+  const before = Object.values(loadDone()).filter(Boolean).length;
   try { localStorage.setItem(KEY, JSON.stringify(d)); } catch { /* ignore */ }
+  logActivity(Object.values(d).filter(Boolean).length - before);
 }
 function loadLast(): { slug: string; mi: number; li: number } | null {
   try {
@@ -253,6 +257,7 @@ function Search({ onClose }: { onClose: () => void }) {
 /* ───────── Обща рамка ───────── */
 function Shell({ children, theme, toggleTheme }: { children: ReactNode; theme: Theme; toggleTheme: () => void }) {
   const [search, setSearch] = useState(false);
+  const [help, setHelp] = useState(false);
   useEffect(() => {
     const f = (e: KeyboardEvent) => {
       const el = e.target as HTMLElement | null;
@@ -260,6 +265,12 @@ function Shell({ children, theme, toggleTheme }: { children: ReactNode; theme: T
       if ((e.key === "k" && (e.ctrlKey || e.metaKey)) || (e.key === "/" && !typing)) {
         e.preventDefault();
         setSearch(true);
+      } else if (e.key === "?" && !typing) {
+        setHelp((x) => !x);
+      } else if (e.key === "Escape") {
+        setHelp(false);
+      } else if (!typing && !e.ctrlKey && !e.metaKey && !e.altKey && e.key === "t") {
+        toggleTheme();
       }
     };
     addEventListener("keydown", f);
@@ -280,7 +291,8 @@ function Shell({ children, theme, toggleTheme }: { children: ReactNode; theme: T
             <a href="#kursove" className="hidden px-2 py-2 hover:text-ink sm:block">Курсове</a>
             <a href="#pateki" className="hidden px-2 py-2 hover:text-ink md:block">Пътеки</a>
             <a href="#vaprosi" className="hidden px-2 py-2 hover:text-ink md:block">Въпроси</a>
-            <a href="https://github.com/biramentv-ux/svetlina-i-kod" target="_blank" rel="noopener noreferrer" className="hidden px-2 py-2 hover:text-ink lg:block">Код</a>
+            <a href="#/moi" className="px-2 py-2 hover:text-ink" title="Моят напредък"><span className="hidden sm:inline">Моят напредък</span><span className="sm:hidden" aria-label="Моят напредък">★</span></a>
+            <a href="https://github.com/biramentv-ux/svetlina-i-kod" target="_blank" rel="noopener noreferrer" className="hidden px-2 py-2 hover:text-ink xl:block">Код</a>
             <button onClick={() => setSearch(true)} className="icon-btn px-3 text-sm" aria-label="Търсене в курсове и уроци">
               {I.search}
               <span className="hidden sm:inline">Търсене</span>
@@ -310,6 +322,8 @@ function Shell({ children, theme, toggleTheme }: { children: ReactNode; theme: T
             <p className="eyebrow text-second">Школата</p>
             <ul className="mt-3 space-y-2 text-sm text-soft">
               <li><a href="#kursove" className="hover:text-accent">Всички курсове</a></li>
+              <li><a href="#/moi" className="hover:text-accent">Моят напредък</a></li>
+              <li><button onClick={() => setHelp(true)} className="hover:text-accent">Клавишни комбинации</button></li>
               <li><a href="#vaprosi" className="hover:text-accent">Въпроси</a></li>
               <li><button onClick={() => setSearch(true)} className="hover:text-accent">Търсене</button></li>
               <li><a href="https://github.com/biramentv-ux/svetlina-i-kod" target="_blank" rel="noopener noreferrer" className="hover:text-accent">Изходен код (GitHub)</a></li>
@@ -323,6 +337,7 @@ function Shell({ children, theme, toggleTheme }: { children: ReactNode; theme: T
         </p>
       </footer>
       {search && <Search onClose={() => setSearch(false)} />}
+      {help && <Shortcuts onClose={() => setHelp(false)} />}
     </div>
   );
 }
@@ -728,6 +743,7 @@ function CoursePage({ c }: { c: Course }) {
               <Bar value={d / n} className="h-1.5" />
             </div>
             <p className="text-sm text-mute">{c.modules.length} модула · {n} урока · {fmtHours(totalMinutes(c))}</p>
+            {d === n && <a href={`#/sertifikat/${c.slug}`} className="btn-ghost px-4 py-2 text-sm">Вземи удостоверение</a>}
           </div>
         </div>
       </section>
@@ -843,12 +859,18 @@ function CoursePage({ c }: { c: Course }) {
 export default function App() {
   const hash = useHash();
   const [theme, toggleTheme] = useTheme();
+  const cert = hash.match(/^#\/sertifikat\/([^/]+)$/);
+  const certCourse = cert ? courses.find((c) => c.slug === cert[1]) : undefined;
   const m = hash.match(/^#\/kurs\/([^/]+)(?:\/(\d+)-(\d+))?$/);
   const course = m ? courses.find((c) => c.slug === m[1]) : undefined;
   const lesson = m && m[2] !== undefined ? { mi: Number(m[2]), li: Number(m[3]) } : null;
   return (
     <Shell theme={theme} toggleTheme={toggleTheme}>
-      {!course ? (
+      {hash === "#/moi" ? (
+        <MyPage />
+      ) : certCourse ? (
+        <Certificate c={certCourse} />
+      ) : !course ? (
         <Landing theme={theme} />
       ) : lesson && course.modules[lesson.mi]?.l[lesson.li] ? (
         <LessonPage c={course} mi={lesson.mi} li={lesson.li} />
@@ -1166,6 +1188,20 @@ function LessonPage({ c, mi, li }: { c: Course; mi: number; li: number }) {
   const body = useRef<HTMLDivElement>(null);
   const [read, setRead] = useState(0);
   const [active, setActive] = useState(0);
+  const [reader] = useReader();
+
+  // ← и → за предишен и следващ урок
+  useEffect(() => {
+    const f = (e: KeyboardEvent) => {
+      const el = e.target as HTMLElement | null;
+      if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.tagName === "SELECT" || el.isContentEditable)) return;
+      if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
+      if (e.key === "ArrowLeft" && prev) location.hash = href(prev);
+      if (e.key === "ArrowRight" && next) location.hash = href(next);
+    };
+    addEventListener("keydown", f);
+    return () => removeEventListener("keydown", f);
+  }, [k]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -1233,7 +1269,7 @@ function LessonPage({ c, mi, li }: { c: Course; mi: number; li: number }) {
         <div className="h-full bg-primary" style={{ width: `${read * 100}%` }} />
       </div>
       <div className="mx-auto grid max-w-6xl gap-12 px-4 pb-20 pt-8 sm:px-6 lg:grid-cols-[minmax(0,1fr)_15rem]">
-        <article className="min-w-0 max-w-3xl">
+        <article className={`min-w-0 ${reader.wide ? "max-w-none" : "max-w-3xl"}`}>
           <nav className="no-print text-sm text-mute" aria-label="Път">
             <a href={`#/kurs/${c.slug}`} className="hover:text-ink">← {c.name}</a>
             <span className="mx-2 text-faint">/</span>
@@ -1247,6 +1283,7 @@ function LessonPage({ c, mi, li }: { c: Course; mi: number; li: number }) {
             {done[k] && <span className="inline-flex items-center gap-1.5 text-accent">{I.check} Завършен</span>}
             {words > 0 && <span>около {Math.max(1, Math.round(words / 180))} мин четене</span>}
           </p>
+          <LessonTools k={k} />
 
           {videos[k] && <VideoBlock url={videos[k]} />}
 
@@ -1267,7 +1304,7 @@ function LessonPage({ c, mi, li }: { c: Course; mi: number; li: number }) {
           )}
 
           {html ? (
-            <div ref={body} className="prose-vj mt-8" dangerouslySetInnerHTML={{ __html: html }} />
+            <div ref={body} className="prose-vj mt-8" style={{ fontSize: FONT_SIZES[reader.fs] }} dangerouslySetInnerHTML={{ __html: html }} />
           ) : (
             short && (
               <div ref={body} className="mt-8">
@@ -1302,6 +1339,8 @@ function LessonPage({ c, mi, li }: { c: Course; mi: number; li: number }) {
               <QuizView z={short.z} onPass={finish} />
             </section>
           )}
+
+          <Notes k={k} />
 
           <div className="no-print mt-14 grid gap-3 border-t border-line pt-8 sm:grid-cols-2">
             {prev ? (
@@ -1381,6 +1420,32 @@ function VideoBlock({ url }: { url?: string }) {
           allowFullScreen
         />
       )}
+    </div>
+  );
+}
+
+function Shortcuts({ onClose }: { onClose: () => void }) {
+  const rows: [string, string][] = [
+    ["/ или Ctrl+K", "Търсене"],
+    ["← и →", "Предишен и следващ урок"],
+    ["T", "Светла или тъмна тема"],
+    ["?", "Тази помощ"],
+    ["Esc", "Затвори"],
+  ];
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-scrim p-4" onClick={onClose}>
+      <div role="dialog" aria-modal="true" aria-labelledby="sc-t" className="pop panel w-full max-w-sm p-6" onClick={(e) => e.stopPropagation()}>
+        <h2 id="sc-t" className="display text-2xl">Клавишни комбинации</h2>
+        <dl className="mt-5 space-y-2.5">
+          {rows.map(([a, b]) => (
+            <div key={a} className="flex items-center justify-between gap-4 text-sm">
+              <dt className="kbd py-0.5 text-[0.75rem] text-soft">{a}</dt>
+              <dd className="text-soft">{b}</dd>
+            </div>
+          ))}
+        </dl>
+        <button onClick={onClose} className="btn-ghost mt-6 px-4 py-2 text-sm" autoFocus>Затвори</button>
+      </div>
     </div>
   );
 }

@@ -15,6 +15,9 @@ import { c13 } from "./c13";
 import { c14 } from "./c14";
 import { c15 } from "./c15";
 import { c16 } from "./c16";
+import { c17 } from "./c17";
+import { c18 } from "./c18";
+import { c19 } from "./c19";
 
 export const content: Record<string, Content[][]> = {
   "nachinaesht-vj": c1,
@@ -33,5 +36,8 @@ export const content: Record<string, Content[][]> = {
   "ii-za-vizualni-artisti": c14,
   "reverse-engineering": c15,
   "programirane-ot-nulata": c16,
+  "sheydari-glsl": c17,
+  "linux-komanden-red": c18,
+  "matematika-za-ii": c19,
 };
 export type { Content } from "./types";
