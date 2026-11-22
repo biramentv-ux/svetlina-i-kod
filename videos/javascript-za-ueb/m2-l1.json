@@ -2,7 +2,7 @@
  "template": "code",
  "title": "fetch и работа с API",
  "subtitle": "Три състояния: зареждане, успех, грешка",
- "crumb": "JavaScript за уеб · урок 8",
+ "crumb": "JavaScript за уеб · урок 7",
  "file": "index.html",
  "lang": "HTML",
  "previewTitle": "Страница",
@@ -11,22 +11,22 @@
  "steps": [
   {
    "caption": "Страницата казва „Зареждане…“, а данните идват от адрес.",
-   "code": "<p id=\"stanje\">Зареждане…</p>\n<ul id=\"spisak\"></ul>\n<script type=\"module\">\nconst url = 'data:application/json,[\"Хляб\",\"Мляко\"]';\n</script>",
+   "code": "<p id=\"info\">Зареждане…</p>\n<ul id=\"list\"></ul>\n<script type=\"module\">\nconst url = 'data:application/json,[\"Хляб\",\"Мляко\"]';\n</script>",
    "hold": 1
   },
   {
    "caption": "fetch връща Promise: чакаме го с await и гледаме response.ok.",
-   "code": "<p id=\"stanje\">Зареждане…</p>\n<ul id=\"spisak\"></ul>\n<script type=\"module\">\nconst url = 'data:application/json,[\"Хляб\",\"Мляко\"]';\nconst otgovor = await fetch(url);\nconsole.log(\"ok:\", otgovor.ok);\nconst danni = await otgovor.json();\n</script>",
+   "code": "<p id=\"info\">Зареждане…</p>\n<ul id=\"list\"></ul>\n<script type=\"module\">\nconst url = 'data:application/json,[\"Хляб\",\"Мляко\"]';\nconst response = await fetch(url);\nconsole.log(\"ok:\", response.ok);\nconst data = await response.json();\n</script>",
    "hold": 1
   },
   {
    "caption": "Чуждите текстове слагаме с textContent, не с innerHTML.",
-   "code": "<p id=\"stanje\">Зареждане…</p>\n<ul id=\"spisak\"></ul>\n<script type=\"module\">\nconst url = 'data:application/json,[\"Хляб\",\"Мляко\"]';\nconst otgovor = await fetch(url);\nconsole.log(\"ok:\", otgovor.ok);\nconst danni = await otgovor.json();\nfor (const t of danni) {\n  const li = document.createElement(\"li\");\n  li.textContent = t;\n  spisak.append(li);\n}\nstanje.textContent = \"Заредени: \" + danni.length;\n</script>",
-   "hold": 1.5
+   "code": "<p id=\"info\">Зареждане…</p>\n<ul id=\"list\"></ul>\n<script type=\"module\">\nconst url = 'data:application/json,[\"Хляб\",\"Мляко\"]';\nconst response = await fetch(url);\nconsole.log(\"ok:\", response.ok);\nconst data = await response.json();\nfor (const t of data) {\n  const li = document.createElement(\"li\");\n  li.textContent = t;\n  list.append(li);\n}\ninfo.textContent = \"Заредени: \" + data.length;\n</script>",
+   "hold": 0.8
   },
   {
    "caption": "Грешките хващаме с try/catch и казваме на потребителя какво стана.",
-   "code": "<p id=\"stanje\">Зареждане…</p>\n<ul id=\"spisak\"></ul>\n<script type=\"module\">\ntry {\n  const otgovor = await fetch(\"/nyama.json\");\n  if (!otgovor.ok) throw new Error(otgovor.status);\n  const danni = await otgovor.json();\n  stanje.textContent = \"Заредени: \" + danni.length;\n} catch (greshka) {\n  stanje.textContent = \"Грешка: \" + greshka.name;\n  console.log(\"хванах:\", greshka.message);\n}\n</script>",
+   "code": "<p id=\"info\">Зареждане…</p>\n<ul id=\"list\"></ul>\n<script type=\"module\">\ntry {\n  const response = await fetch(\"/nyama.json\");\n  if (!response.ok) throw new Error(response.status);\n  const data = await response.json();\n  info.textContent = \"Заредени: \" + data.length;\n} catch (err) {\n  info.textContent = \"Грешка: \" + err.name;\n}\n</script>",
    "hold": 2
   }
  ]

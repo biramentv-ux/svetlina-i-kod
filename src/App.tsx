@@ -1339,7 +1339,7 @@ function LessonPage({ c, mi, li, sec }: { c: Course; mi: number; li: number; sec
           <LessonTools k={k} />
 
           {videos[k] && <VideoBlock url={videos[k]} />}
-          {lessonVideos[k] && <ScreenVideo v={lessonVideos[k]} href={lessonHref(c.slug, mi, li)} />}
+          {lessonVideos[k] && <ScreenVideo key={k} v={lessonVideos[k]} href={lessonHref(c.slug, mi, li)} />}
 
           {html && <Listen root={body} dep={k} />}
 

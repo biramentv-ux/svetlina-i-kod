@@ -11,17 +11,17 @@
  "steps": [
   {
    "caption": "requestAnimationFrame вика функцията преди всеки кадър.",
-   "code": "<canvas id=c width=400 height=120></canvas>\n<script>\nconst ctx = c.getContext(\"2d\");\nlet x = 30;\nfunction frame() {\n  ctx.clearRect(0, 0, 400, 120);\n  x = (x + 3) % 400;          // 3 пиксела на кадър\n  ctx.fillRect(x, 50, 20, 20);\n  requestAnimationFrame(frame);\n}\nframe();\n</script>\n",
-   "hold": 2.2
+   "code": "<canvas id=c width=400 height=120></canvas>\n<script>\nconst ctx = c.getContext(\"2d\");\nlet x = 30;\nfunction frame() {\n  ctx.clearRect(0, 0, 400, 120);\n  x = (x + 3) % 400;\n  ctx.fillRect(x, 50, 20, 20);\n  requestAnimationFrame(frame);\n}\nframe();\n</script>\n",
+   "hold": 1.8
   },
   {
    "caption": "Скорост в пиксели за секунда, умножена по делтата.",
-   "code": "<canvas id=c width=400 height=120></canvas>\n<script>\nconst ctx = c.getContext(\"2d\");\nlet x = 30, last = 0;\nfunction frame(now) {\n  const dt = Math.min((now - last) / 1000, 0.1);\n  last = now;\n  ctx.clearRect(0, 0, 400, 120);\n  x = (x + 200 * dt) % 400;   // 200 px в секунда\n  ctx.fillRect(x, 50, 20, 20);\n  requestAnimationFrame(frame);\n}\nrequestAnimationFrame(frame);\n</script>\n",
-   "hold": 2.2
+   "code": "<canvas id=c width=400 height=120></canvas>\n<script>\nconst ctx = c.getContext(\"2d\");\nlet x = 30, last = 0;\nfunction frame(now) {\n  const dt = Math.min((now - last) / 1000, 0.1);\n  last = now;\n  ctx.clearRect(0, 0, 400, 120);\n  x = (x + 200 * dt) % 400;\n  ctx.fillRect(x, 50, 20, 20);\n  requestAnimationFrame(frame);\n}\nrequestAnimationFrame(frame);\n</script>\n",
+   "hold": 1.8
   },
   {
    "caption": "Броячът показва колко кадъра минават за секунда.",
-   "code": "<canvas id=c width=400 height=120></canvas>\n<script>\nconst ctx = c.getContext(\"2d\");\nlet x = 30, last = 0, n = 0;\nfunction frame(now) {\n  const dt = Math.min((now - last) / 1000, 0.1);\n  last = now;\n  ctx.clearRect(0, 0, 400, 120);\n  x = (x + 200 * dt) % 400;   // 200 px в секунда\n  ctx.fillRect(x, 50, 20, 20);\n  n++;\n  requestAnimationFrame(frame);\n}\nrequestAnimationFrame(frame);\nsetTimeout(() => console.log(\"кадри за 1 с:\", n), 1000);\n</script>\n",
+   "code": "<canvas id=c width=400 height=120></canvas>\n<script>\nconst ctx = c.getContext(\"2d\");\nlet x = 30, last = 0, n = 0;\nfunction frame(now) {\n  const dt = Math.min((now - last) / 1000, 0.1);\n  last = now;\n  ctx.clearRect(0, 0, 400, 120);\n  x = (x + 200 * dt) % 400;\n  ctx.fillRect(x, 50, 20, 20);\n  n++;\n  requestAnimationFrame(frame);\n}\nrequestAnimationFrame(frame);\nsetTimeout(() => console.log(\"кадри за 1 с:\", n), 1000);\n</script>\n",
    "hold": 2.6
   }
  ]
