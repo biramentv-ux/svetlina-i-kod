@@ -16,7 +16,7 @@
   },
   {
    "caption": "submit обработваме с addEventListener, а preventDefault спира презареждането",
-   "code": "<!doctype html>\n<meta charset=\"utf-8\">\n<form id=\"f\">\n  <input id=\"t\">\n  <button>Добави</button>\n</form>\n<ul id=\"list\"></ul>\n<script>\nconst f = document.querySelector(\"#f\");\nconst t = document.querySelector(\"#t\");\nt.focus();\nf.addEventListener(\"submit\", (e) => {\n  e.preventDefault();\n  const li = document.createElement(\"li\");\n  li.textContent = t.value;\n  list.append(li);\n  t.value = \"\";\n});\n</script>",
+   "code": "<!doctype html>\n<meta charset=\"utf-8\">\n<form id=\"f\">\n  <input id=\"t\">\n  <button>Добави</button>\n</form>\n<ul id=\"list\"></ul>\n<script>\nconst f = document.querySelector(\"#f\");\nconst t = document.querySelector(\"#t\");\nconst list = document.querySelector(\"#list\");\nt.focus();\nf.addEventListener(\"submit\", (e) => {\n  e.preventDefault();\n  const li = document.createElement(\"li\");\n  li.textContent = t.value;\n  list.append(li);\n  t.value = \"\";\n});\n</script>",
    "hold": 0.8,
    "keys": [
     {
@@ -48,7 +48,7 @@
   },
   {
    "caption": "Един слушател на списъка с closest обслужва всички елементи – делегиране",
-   "code": "<!doctype html>\n<meta charset=\"utf-8\">\n<form id=\"f\">\n  <input id=\"t\">\n  <button>Добави</button>\n</form>\n<ul id=\"list\"></ul>\n<script>\nconst f = document.querySelector(\"#f\");\nconst t = document.querySelector(\"#t\");\nt.focus();\nf.addEventListener(\"submit\", (e) => {\n  e.preventDefault();\n  const li = document.createElement(\"li\");\n  li.textContent = t.value;\n  list.append(li);\n  t.value = \"\";\n});\nlist.addEventListener(\"click\", (e) => {\n  e.target.closest(\"li\")?.remove();\n});\n</script>",
+   "code": "<!doctype html>\n<meta charset=\"utf-8\">\n<form id=\"f\">\n  <input id=\"t\">\n  <button>Добави</button>\n</form>\n<ul id=\"list\"></ul>\n<script>\nconst f = document.querySelector(\"#f\");\nconst t = document.querySelector(\"#t\");\nconst list = document.querySelector(\"#list\");\nt.focus();\nf.addEventListener(\"submit\", (e) => {\n  e.preventDefault();\n  const li = document.createElement(\"li\");\n  li.textContent = t.value;\n  list.append(li);\n  t.value = \"\";\n});\nlist.addEventListener(\"click\", (e) => {\n  e.target.closest(\"li\")?.remove();\n});\n</script>",
    "hold": 2,
    "keys": [
     {
