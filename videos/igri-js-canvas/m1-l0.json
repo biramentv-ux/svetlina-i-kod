@@ -11,12 +11,12 @@
  "steps": [
   {
    "caption": "keydown добавя клавиша в множество, keyup го маха.",
-   "code": "<canvas width=\"400\" height=\"160\"></canvas>\n<script>\nconst ctx = document.querySelector(\"canvas\").getContext(\"2d\");\nconst keys = new Set();\naddEventListener(\"keydown\", (e) => keys.add(e.code));\naddEventListener(\"keyup\", (e) => keys.delete(e.code));\nlet x = 40;\nctx.fillRect(x, 60, 30, 30);\n</script>\n",
+   "code": "<canvas id=c width=400 height=160></canvas>\n<script>\nconst ctx = c.getContext(\"2d\");\nconst keys = new Set();\naddEventListener(\"keydown\", (e) => keys.add(e.code));\naddEventListener(\"keyup\", (e) => keys.delete(e.code));\nlet x = 40;\nctx.fillRect(x, 60, 30, 30);\n</script>\n",
    "hold": 1.4
   },
   {
    "caption": "Цикълът чете множеството всеки кадър и движи героя.",
-   "code": "<canvas width=\"400\" height=\"160\"></canvas>\n<script>\nconst ctx = document.querySelector(\"canvas\").getContext(\"2d\");\nconst keys = new Set();\naddEventListener(\"keydown\", (e) => keys.add(e.code));\naddEventListener(\"keyup\", (e) => keys.delete(e.code));\nlet x = 40, last = 0;\nfunction frame(now) {\n  const dt = Math.min((now - last) / 1000, 0.1);\n  last = now;\n  if (keys.has(\"ArrowRight\")) x += 150 * dt;\n  ctx.clearRect(0, 0, 400, 160);\n  ctx.fillRect(x, 60, 30, 30);\n  requestAnimationFrame(frame);\n}\nrequestAnimationFrame(frame);\n</script>\n",
+   "code": "<canvas id=c width=400 height=160></canvas>\n<script>\nconst ctx = c.getContext(\"2d\");\nconst keys = new Set();\naddEventListener(\"keydown\", (e) => keys.add(e.code));\naddEventListener(\"keyup\", (e) => keys.delete(e.code));\nlet x = 40, last = 0;\nfunction frame(now) {\n  const dt = Math.min((now - last) / 1000, 0.1);\n  last = now;\n  if (keys.has(\"ArrowRight\")) x += 150 * dt;\n  ctx.clearRect(0, 0, 400, 160);\n  ctx.fillRect(x, 60, 30, 30);\n  requestAnimationFrame(frame);\n}\nrequestAnimationFrame(frame);\n</script>\n",
    "hold": 0.6,
    "keys": [
     {
@@ -28,7 +28,7 @@
   },
   {
    "caption": "event.code е физически клавиш: KeyA работи и на кирилица.",
-   "code": "<canvas width=\"400\" height=\"160\"></canvas>\n<script>\nconst ctx = document.querySelector(\"canvas\").getContext(\"2d\");\nconst keys = new Set();\naddEventListener(\"keydown\", (e) => keys.add(e.code));\naddEventListener(\"keyup\", (e) => keys.delete(e.code));\nlet x = 40, last = 0;\nfunction frame(now) {\n  const dt = Math.min((now - last) / 1000, 0.1);\n  last = now;\n  if (keys.has(\"ArrowRight\")) x += 150 * dt;\n  if (keys.has(\"ArrowLeft\") || keys.has(\"KeyA\")) x -= 150 * dt;\n  ctx.clearRect(0, 0, 400, 160);\n  ctx.fillRect(x, 60, 30, 30);\n  requestAnimationFrame(frame);\n}\nrequestAnimationFrame(frame);\n</script>\n",
+   "code": "<canvas id=c width=400 height=160></canvas>\n<script>\nconst ctx = c.getContext(\"2d\");\nconst keys = new Set();\naddEventListener(\"keydown\", (e) => keys.add(e.code));\naddEventListener(\"keyup\", (e) => keys.delete(e.code));\nlet x = 40, last = 0;\nfunction frame(now) {\n  const dt = Math.min((now - last) / 1000, 0.1);\n  last = now;\n  if (keys.has(\"ArrowRight\")) x += 150 * dt;\n  if (keys.has(\"ArrowLeft\") || keys.has(\"KeyA\")) x -= 150 * dt;\n  ctx.clearRect(0, 0, 400, 160);\n  ctx.fillRect(x, 60, 30, 30);\n  requestAnimationFrame(frame);\n}\nrequestAnimationFrame(frame);\n</script>\n",
    "hold": 0.8,
    "keys": [
     {
