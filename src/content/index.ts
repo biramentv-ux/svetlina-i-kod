@@ -26,6 +26,7 @@ import { c24 } from "./c24";
 import { c25 } from "./c25";
 import { c26 } from "./c26";
 import { c27 } from "./c27";
+import { c28 } from "./c28";
 
 export const content: Record<string, Content[][]> = {
   "nachinaesht-vj": c1,
@@ -55,5 +56,6 @@ export const content: Record<string, Content[][]> = {
   "javascript-za-ueb": c25,
   "node-api-bazi": c26,
   "igri-js-canvas": c27,
+  "ii-modeli-destilaciya-kvantizaciya": c28,
 };
 export type { Content } from "./types";

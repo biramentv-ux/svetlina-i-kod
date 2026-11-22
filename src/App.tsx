@@ -33,7 +33,7 @@ const tracks: { n: string; title: string; text: string; slugs: string[] }[] = [
     n: "B",
     title: "Изкуствен интелект",
     text: "От първия промпт през агентите и ИИ за визия до това как се обучават моделите.",
-    slugs: ["rabota-s-ii", "ii-agenti-i-avtomatizaciya", "ii-za-vizualni-artisti", "matematika-za-ii", "ii-ot-perceptrona-do-llm"],
+    slugs: ["rabota-s-ii", "ii-agenti-i-avtomatizaciya", "ii-za-vizualni-artisti", "matematika-za-ii", "ii-ot-perceptrona-do-llm", "ii-modeli-destilaciya-kvantizaciya"],
   },
   {
     n: "C",
